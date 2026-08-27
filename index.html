@@ -221,12 +221,12 @@ function logout() {
   location.reload();
 }
 
-// Intégration officielle FedaPay avec ta clé publique de test
+// Intégration FedaPay
 function paySubscription() {
   let db = getCurrentUserData();
   if(!db) return;
 
-  // Remplace 'pk_test_...' par ta vraie clé publique FedaPay récupérée sur ton dashboard
+  // Remplace 'pk_test_VOTRE_CLE_ICI' par ta vraie clé publique FedaPay (pk_test_...)
   const FEDAPAY_PUBLIC_KEY = 'pk_test_VOTRE_CLE_ICI'; 
 
   if(FEDAPAY_PUBLIC_KEY.includes('VOTRE_CLE')) {
