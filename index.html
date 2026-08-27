@@ -6,6 +6,8 @@
 <meta name="theme-color" content="#16a34a">
 <link rel="manifest" href="manifest.json">
 <title>Gestionnaire Intelligent — SaaS Pro</title>
+<!-- Script officiel FedaPay pour les paiements Mobile Money -->
+<script src="https://cdn.fedapay.com/checkout.js?v=1.1.7"></script>
 <style>
 *{box-sizing:border-box}body{margin:0;background:#f3f6f4;color:#172018;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
 .app{max-width:500px;margin:auto;min-height:100vh;background:#fff;position:relative}.hidden{display:none!important}
@@ -47,7 +49,7 @@ input,select{width:100%;padding:12px;border:1px solid #dce4de;border-radius:11px
   <div class="auth-box">
     <div class="logo">📊</div>
     <h1>Gestionnaire Intelligent</h1>
-    <p class="muted center">Solution SaaS Pro (Mobile Money compatible).</p>
+    <p class="muted center">Solution SaaS Pro (FedaPay Mobile Money).</p>
     <div class="card">
       <div class="tab-row">
         <button id="tabLoginBtn" class="active-tab" onclick="switchAuthTab('login')">Connexion</button>
@@ -116,8 +118,8 @@ input,select{width:100%;padding:12px;border:1px solid #dce4de;border-radius:11px
 <div class="card"><h3>Compte</h3><p class="muted">Responsable : <b id="ownerInfo"></b><br>Boutique : <b id="shopInfo"></b><br>Email : <b id="emailInfo"></b></p></div>
 <div class="card"><h3>💳 Abonnement Mobile Money (3 $ / mois)</h3>
 <p class="muted">Statut : <span id="subStatus" class="badge">Actif</span></p>
-<p class="muted" style="margin-top:8px">Les abonnements sont encaissés directement sur votre compte Mobile Money via FedaPay / CinetPay.</p>
-<button class="primary" style="width:100%;margin-top:10px" onclick="paySubscription()">Payer / Renouveler (Mobile Money)</button>
+<p class="muted" style="margin-top:8px">Les abonnements sont encaissés directement sur votre compte Mobile Money via FedaPay.</p>
+<button class="primary" style="width:100%;margin-top:10px" onclick="paySubscription()">Payer / Renouveler (FedaPay)</button>
 </div>
 <div class="card"><button class="danger" style="width:100%" onclick="logout()">Se déconnecter</button></div>
 </section>
@@ -201,7 +203,6 @@ function handleLogin() {
   initAppSession();
 }
 
-// Fonction de récupération de mot de passe en cas d'oubli
 function forgotPassword() {
   const email = prompt("Entrez l'email associé à votre compte pour récupérer votre mot de passe :");
   if(!email) return;
@@ -220,17 +221,38 @@ function logout() {
   location.reload();
 }
 
+// Intégration officielle FedaPay avec ta clé publique de test
 function paySubscription() {
   let db = getCurrentUserData();
   if(!db) return;
-  
-  let choix = confirm("Passerelle Mobile Money :\nVoulez-vous valider le paiement de 3 $ par Mobile Money pour activer votre abonnement pro ?");
-  if(choix) {
+
+  // Remplace 'pk_test_...' par ta vraie clé publique FedaPay récupérée sur ton dashboard
+  const FEDAPAY_PUBLIC_KEY = 'pk_test_VOTRE_CLE_ICI'; 
+
+  if(FEDAPAY_PUBLIC_KEY.includes('VOTRE_CLE')) {
+    alert("Veuillez d'abord insérer votre vraie clé publique FedaPay dans le code source.");
+    return;
+  }
+
+  FedaPay.init({
+    public_key: FEDAPAY_PUBLIC_KEY,
+    transaction: {
+      amount: 2000, // Environ 3$ en FCFA
+      description: 'Abonnement Pro - Gestionnaire Intelligent (1 Mois)'
+    },
+    customer: {
+      email: db.email,
+      last_name: db.owner,
+      first_name: db.shop
+    }
+  }).open().then((response) => {
     db.isPaid = true;
     saveCurrentUserData(db);
     alert('Paiement Mobile Money reçu avec succès ! Votre abonnement est actif ✅');
     initAppSession();
-  }
+  }).catch((error) => {
+    alert('Le paiement a été annulé ou a échoué.');
+  });
 }
 
 function initAppSession() {
@@ -255,8 +277,8 @@ function initAppSession() {
     app.classList.remove('hidden');
     const daysLeftVal = Math.max(0, Math.ceil((thirtyDays - elapsed)/(24*60*60*1000)));
     if(db.isPaid) {
-      document.getElementById('trialNotice').innerHTML = '✅ <b>Abonnement Pro Actif (Mobile Money)</b>';
-      subStatus.textContent = 'Actif (Mobile Money)';
+      document.getElementById('trialNotice').innerHTML = '✅ <b>Abonnement Pro Actif (FedaPay)</b>';
+      subStatus.textContent = 'Actif (FedaPay)';
     } else {
       document.getElementById('daysLeft').textContent = daysLeftVal;
       subStatus.textContent = `Essai (${daysLeftVal}j restants)`;
