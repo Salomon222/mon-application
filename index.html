@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#16a34a">
+<title>Gestionnaire Intelligent — V3 Pro</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f3f6f4;color:#172018;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+.app{max-width:500px;margin:auto;min-height:100vh;background:#fff}.hidden{display:none!important}
+header{padding:18px 16px 10px;display:flex;justify-content:space-between;align-items:center}h1{font-size:22px;margin:0}.muted{color:#68736c;font-size:13px}
+main{padding:0 15px 92px}.card{background:#fff;border:1px solid #e3e9e5;border-radius:17px;padding:15px;margin:12px 0;box-shadow:0 2px 10px #00000007}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.metric{padding:13px;border-radius:14px}.metric span{font-size:12px}.metric b{display:block;font-size:18px;margin-top:5px}
+.green{background:#e9f8ed}.red{background:#fff0ef}.blue{background:#edf5ff}.yellow{background:#fff8df}.purple{background:#f3edff}
+button{border:0;border-radius:11px;padding:12px 14px;font-weight:750;cursor:pointer}.primary{background:#16a34a;color:#fff}.soft{background:#edf2ee;color:#263229}.danger{background:#fff0ef;color:#b42318}
+input,select{width:100%;padding:12px;border:1px solid #dce4de;border-radius:11px;margin:6px 0 11px;font-size:15px;background:#fff}label{font-size:13px;font-weight:700}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:9px}.actions button{min-height:52px}.row{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(500px,100%);display:grid;grid-template-columns:repeat(5,1fr);background:#fff;border-top:1px solid #e3e9e5;z-index:10;padding:6px 2px}.nav button{background:none;color:#667169;font-size:10px;padding:7px 2px}.nav button.active{color:#16a34a}
+.badge{font-size:11px;padding:5px 8px;border-radius:20px;background:#e9f8ed;color:#17783a}.low{background:#fff3d4;color:#9a6900}.critical{background:#ffe9e7;color:#b42318}
+.item{padding:12px 0;border-bottom:1px solid #edf0ee}.item:last-child{border:0}.back{background:none;padding:0;font-size:24px}.title{font-size:20px;margin:9px 0 15px}
+.notice{border:1px solid #ccefd4;background:#effaf2;border-radius:14px;padding:13px;font-size:13px}
+.barbox{height:150px;display:flex;align-items:flex-end;gap:7px;border-top:1px solid #edf0ee;padding:14px 3px 5px}.bar{flex:1;min-height:5px;background:#bde6c8;border-radius:6px 6px 2px 2px;position:relative}.bar small{position:absolute;bottom:-18px;width:100%;text-align:center;font-size:9px}
+.login{padding:48px 22px}.logo{text-align:center;font-size:45px}.login h1{text-align:center}.center{text-align:center}
+table{width:100%;border-collapse:collapse;font-size:13px}td,th{text-align:left;padding:9px 5px;border-bottom:1px solid #edf0ee}.scroll{overflow:auto}
+</style>
+</head>
+<body>
+<div class="app">
+
+<section id="onboarding">
+  <div class="login">
+    <div class="logo">📊</div><h1>Gestionnaire Intelligent</h1>
+    <p class="muted center">La V3 prépare notre application à devenir un vrai produit SaaS pour les petits commerces.</p>
+    <div class="card">
+      <label>Nom du commerce</label><input id="newShop" placeholder="Ex : Boutique Marius">
+      <label>Nom du responsable</label><input id="newOwner" placeholder="Ex : Marius">
+      <button class="primary" style="width:100%" onclick="createAccount()">Créer mon espace</button>
+    </div>
+  </div>
+</section>
+
+<div id="app" class="hidden">
+<header><div><div class="muted" id="hello"></div><h1 id="shopTitle"></h1></div><button class="soft" onclick="show('more')">⚙️</button></header>
+<main>
+
+<section id="home">
+<div class="card"><div class="muted">Tableau de bord</div><div class="grid">
+<div class="metric green"><span>Ventes</span><b id="mSales">0 FCFA</b></div>
+<div class="metric red"><span>Dépenses</span><b id="mExp">0 FCFA</b></div>
+<div class="metric blue"><span>Bénéfice</span><b id="mProfit">0 FCFA</b></div>
+<div class="metric yellow"><span>Stock</span><b id="mStock">0</b></div>
+</div></div>
+<div class="card"><h3>Actions rapides</h3><div class="actions">
+<button class="primary" onclick="show('sale')">＋ Vente</button><button class="soft" onclick="show('expense')">＋ Dépense</button>
+<button class="soft" onclick="show('products')">📦 Produits</button><button class="soft" onclick="show('reports')">📈 Rapports</button>
+</div></div>
+<div class="notice">🤖 <b>Conseil</b><br><span id="advice">Commence par enregistrer une vente.</span></div>
+</section>
+
+<section id="sale" class="hidden"><button class="back" onclick="show('home')">←</button><h2 class="title">Nouvelle vente</h2>
+<div class="card"><label>Produit</label><select id="saleProduct" onchange="priceFromProduct()"></select><label>Quantité</label><input id="saleQty" type="number" min="1" value="1"><label>Prix unitaire</label><input id="salePrice" type="number" min="0"><button class="primary" style="width:100%" onclick="saveSale()">Enregistrer</button></div></section>
+
+<section id="expense" class="hidden"><button class="back" onclick="show('home')">←</button><h2 class="title">Nouvelle dépense</h2>
+<div class="card"><label>Catégorie</label><select id="expType"><option>Marchandise</option><option>Transport</option><option>Électricité</option><option>Loyer</option><option>Salaires</option><option>Autre</option></select><label>Montant</label><input id="expAmount" type="number" min="0"><label>Description</label><input id="expDesc" placeholder="Ex : livraison"><button class="primary" style="width:100%" onclick="saveExpense()">Enregistrer</button></div></section>
+
+<section id="products" class="hidden"><button class="back" onclick="show('home')">←</button><h2 class="title">Produits & stock</h2>
+<div class="card"><input id="productSearch" placeholder="🔎 Rechercher" oninput="renderProducts()"><div id="productList"></div><button class="primary" style="width:100%;margin-top:10px" onclick="newProduct()">＋ Ajouter un produit</button></div></section>
+
+<section id="reports" class="hidden"><button class="back" onclick="show('home')">←</button><h2 class="title">Rapports</h2>
+<div class="grid"><div class="metric green"><span>Ventes</span><b id="rSales">0</b></div><div class="metric red"><span>Dépenses</span><b id="rExp">0</b></div><div class="metric blue"><span>Bénéfice</span><b id="rProfit">0</b></div><div class="metric purple"><span>Marge</span><b id="rMargin">0%</b></div></div>
+<div class="card"><h3>Ventes récentes</h3><div class="barbox" id="chart"></div></div>
+<div class="card"><h3>🤖 Analyse intelligente</h3><p id="analysis" class="muted"></p></div>
+<div class="card"><button class="soft" style="width:100%" onclick="exportCSV()">⬇️ Exporter mes données (CSV)</button></div>
+</section>
+
+<section id="more" class="hidden"><button class="back" onclick="show('home')">←</button><h2 class="title">Paramètres & prochaines fonctions</h2>
+<div class="card"><h3>Compte</h3><p class="muted">Responsable : <b id="ownerInfo"></b><br>Commerce : <b id="shopInfo"></b></p></div>
+<div class="card"><h3>🚀 Feuille de route</h3>
+<div class="item">☁️ Base de données en ligne <span class="badge">Prochaine étape</span></div>
+<div class="item">🔐 Connexion sécurisée <span class="badge">Prochaine étape</span></div>
+<div class="item">📷 Scan de codes-barres <span class="badge">À construire</span></div>
+<div class="item">🤖 IA avancée connectée <span class="badge">À construire</span></div>
+<div class="item">💳 Abonnements <span class="badge">À construire</span></div></div>
+<div class="card"><button class="danger" style="width:100%" onclick="resetAll()">Réinitialiser le prototype</button></div>
+</section>
+</main>
+
+<nav class="nav">
+<button data-page="home" onclick="show('home')">⌂<br>Accueil</button>
+<button data-page="sale" onclick="show('sale')">＋<br>Vente</button>
+<button data-page="products" onclick="show('products')">▣<br>Stock</button>
+<button data-page="reports" onclick="show('reports')">◒<br>Rapports</button>
+<button data-page="more" onclick="show('more')">⋯<br>Plus</button>
+</nav>
+</div>
+</div>
+
+<script>
+const KEY='GI_V3';
+let db=JSON.parse(localStorage.getItem(KEY)||'null');
+if(db){onboarding.classList.add('hidden');app.classList.remove('hidden')}
+
+function createAccount(){
+ db={owner:(newOwner.value.trim()||'Commerçant'),shop:(newShop.value.trim()||'Mon commerce'),
+ products:[{name:'Riz 25 kg',stock:12,min:5,price:18000},{name:'Huile 1 L',stock:5,min:5,price:1500},{name:'Sucre 1 kg',stock:2,min:5,price:1000}],
+ sales:[],expenses:[]};
+ persist();onboarding.classList.add('hidden');app.classList.remove('hidden');refresh();
+}
+function persist(){localStorage.setItem(KEY,JSON.stringify(db));refresh()}
+function money(n){return new Intl.NumberFormat('fr-FR').format(Math.round(n))+' FCFA'}
+function totals(){return{sales:db.sales.reduce((s,x)=>s+x.total,0),exp:db.expenses.reduce((s,x)=>s+x.amount,0)}}
+function show(id){
+ document.querySelectorAll('main section').forEach(s=>s.classList.add('hidden'));
+ document.getElementById(id).classList.remove('hidden');
+ document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('active',b.dataset.page===id));
+ refresh();
+}
+function refresh(){
+ if(!db)return;
+ hello.textContent='Bonjour, '+db.owner+' 👋';shopTitle.textContent=db.shop;ownerInfo.textContent=db.owner;shopInfo.textContent=db.shop;
+ const t=totals(),p=t.sales-t.exp;
+ mSales.textContent=money(t.sales);mExp.textContent=money(t.exp);mProfit.textContent=money(p);mStock.textContent=db.products.reduce((s,x)=>s+x.stock,0);
+ saleProduct.innerHTML=db.products.map((x,i)=>`<option value="${i}">${x.name}</option>`).join('');priceFromProduct();
+ renderProducts();renderReports();
+ const low=db.products.filter(x=>x.stock<=x.min);
+ advice.textContent=low.length?'Stock à surveiller : '+low.slice(0,2).map(x=>x.name).join(', ')+'.':'Continue à suivre tes ventes, dépenses et stock.';
+}
+function priceFromProduct(){const p=db?.products?.[+(saleProduct.value||0)];if(p)salePrice.value=p.price}
+function saveSale(){
+ const i=+saleProduct.value,q=+saleQty.value,price=+salePrice.value;
+ if(!db.products[i]||q<1||price<0)return alert('Vérifie les informations.');
+ if(db.products[i].stock<q)return alert('Stock insuffisant.');
+ db.products[i].stock-=q;db.sales.unshift({product:db.products[i].name,qty:q,price,total:q*price,date:new Date().toLocaleString('fr-FR')});
+ saleQty.value=1;persist();show('home');alert('Vente enregistrée ✅');
+}
+function saveExpense(){
+ const amount=+expAmount.value;if(amount<=0)return alert('Montant invalide.');
+ db.expenses.unshift({type:expType.value,amount,desc:expDesc.value,date:new Date().toLocaleString('fr-FR')});
+ expAmount.value='';expDesc.value='';persist();show('home');alert('Dépense enregistrée ✅');
+}
+function newProduct(){
+ const name=prompt('Nom du produit :');if(!name)return;
+ const stock=+prompt('Stock initial :','0'),min=+prompt('Seuil minimum :','5'),price=+prompt('Prix de vente :','0');
+ db.products.push({name,stock:Math.max(0,stock),min:Math.max(0,min),price:Math.max(0,price)});persist();
+}
+function renderProducts(){
+ if(!db)return;const q=(productSearch?.value||'').toLowerCase();
+ productList.innerHTML=db.products.filter(p=>p.name.toLowerCase().includes(q)).map(p=>{
+ const c=p.stock<=p.min/2?'critical':p.stock<=p.min?'low':'',l=p.stock<=p.min/2?'Critique':p.stock<=p.min?'Faible':'En stock';
+ return `<div class="item"><div class="row"><div><b>${p.name}</b><div class="muted">${p.stock} unité(s) • ${money(p.price)}</div></div><span class="badge ${c}">${l}</span></div></div>`
+ }).join('')||'<p class="muted">Aucun produit.</p>';
+}
+function renderReports(){
+ if(!db)return;const t=totals(),p=t.sales-t.exp,margin=t.sales?Math.max(0,p/t.sales*100):0;
+ rSales.textContent=money(t.sales);rExp.textContent=money(t.exp);rProfit.textContent=money(p);rMargin.textContent=margin.toFixed(1)+'%';
+ const recent=db.sales.slice(0,7),max=Math.max(1,...recent.map(x=>x.total));
+ chart.innerHTML=recent.length?recent.map(x=>`<div class="bar" style="height:${Math.max(8,x.total/max*100)}%"><small>${Math.round(x.total/max*100)}%</small></div>`).join(''):'<span class="muted">Aucune vente</span>';
+ if(!db.sales.length)analysis.textContent='Enregistre quelques ventes pour recevoir une analyse.';
+ else{
+ const counts={};db.sales.forEach(x=>counts[x.product]=(counts[x.product]||0)+x.qty);
+ const top=Object.entries(counts).sort((a,b)=>b[1]-a[1])[0];
+ analysis.innerHTML=`🏆 Produit le plus vendu : <b>${top[0]}</b> (${top[1]} unité(s)).<br>💰 Solde : <b>${money(p)}</b>.<br>📦 ${db.products.filter(x=>x.stock<=x.min).length} produit(s) ont un stock à surveiller.`;
+ }
+}
+function exportCSV(){
+ const rows=[['TYPE','DATE','ELEMENT','QUANTITE','MONTANT']];
+ db.sales.forEach(x=>rows.push(['VENTE',x.date,x.product,x.qty,x.total]));
+ db.expenses.forEach(x=>rows.push(['DEPENSE',x.date,x.type,'',x.amount]));
+ const csv=rows.map(r=>r.map(v=>`"${String(v).replaceAll('"','""')}"`).join(';')).join('\n');
+ const blob=new Blob([csv],{type:'text/csv;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');
+ a.href=url;a.download='gestionnaire_intelligent_export.csv';a.click();URL.revokeObjectURL(url);
+}
+function resetAll(){if(confirm('Effacer le compte et toutes les données de ce prototype ?')){localStorage.removeItem(KEY);location.reload()}}
+refresh();
+</script>
+</body>
+</html>
