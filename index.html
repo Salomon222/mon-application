@@ -4,10 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#16a34a">
-<title>Gestionnaire Intelligent — V3 Pro</title>
+<link rel="manifest" href="manifest.json">
+<title>Gestionnaire Intelligent — SaaS Pro</title>
 <style>
 *{box-sizing:border-box}body{margin:0;background:#f3f6f4;color:#172018;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
-.app{max-width:500px;margin:auto;min-height:100vh;background:#fff}.hidden{display:none!important}
+.app{max-width:500px;margin:auto;min-height:100vh;background:#fff;position:relative}.hidden{display:none!important}
 header{padding:18px 16px 10px;display:flex;justify-content:space-between;align-items:center}h1{font-size:22px;margin:0}.muted{color:#68736c;font-size:13px}
 main{padding:0 15px 92px}.card{background:#fff;border:1px solid #e3e9e5;border-radius:17px;padding:15px;margin:12px 0;box-shadow:0 2px 10px #00000007}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.metric{padding:13px;border-radius:14px}.metric span{font-size:12px}.metric b{display:block;font-size:18px;margin-top:5px}
@@ -20,30 +21,68 @@ input,select{width:100%;padding:12px;border:1px solid #dce4de;border-radius:11px
 .item{padding:12px 0;border-bottom:1px solid #edf0ee}.item:last-child{border:0}.back{background:none;padding:0;font-size:24px}.title{font-size:20px;margin:9px 0 15px}
 .notice{border:1px solid #ccefd4;background:#effaf2;border-radius:14px;padding:13px;font-size:13px}
 .barbox{height:150px;display:flex;align-items:flex-end;gap:7px;border-top:1px solid #edf0ee;padding:14px 3px 5px}.bar{flex:1;min-height:5px;background:#bde6c8;border-radius:6px 6px 2px 2px;position:relative}.bar small{position:absolute;bottom:-18px;width:100%;text-align:center;font-size:9px}
-.login{padding:48px 22px}.logo{text-align:center;font-size:45px}.login h1{text-align:center}.center{text-align:center}
-table{width:100%;border-collapse:collapse;font-size:13px}td,th{text-align:left;padding:9px 5px;border-bottom:1px solid #edf0ee}.scroll{overflow:auto}
+.auth-box{padding:30px 20px}.logo{text-align:center;font-size:45px}.auth-box h1{text-align:center;margin-bottom:5px}.center{text-align:center}
+.paywall-overlay{position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(255,255,255,0.96);z-index:100;display:flex;flex-direction:column;justify-content:center;padding:24px;text-align:center}
+.paywall-box{background:#fff;border:1px solid #e3e9e5;border-radius:20px;padding:24px;box-shadow:0 10px 30px rgba(0,0,0,0.1)}
+.tab-row{display:flex;gap:10px;margin-bottom:15px}.tab-row button{flex:1;background:#edf2ee;color:#68736c}.tab-row button.active-tab{background:#16a34a;color:#fff}
+.link-btn{background:none;color:#16a34a;padding:5px 0;font-size:13px;text-align:center;width:100%;cursor:pointer;margin-top:5px}
 </style>
 </head>
 <body>
 <div class="app">
 
-<section id="onboarding">
-  <div class="login">
-    <div class="logo">📊</div><h1>Gestionnaire Intelligent</h1>
-    <p class="muted center">La V3 prépare notre application à devenir un vrai produit SaaS pour les petits commerces.</p>
+<!-- PAYWALL ABONNEMENT -->
+<div id="paywall" class="paywall-overlay hidden">
+  <div class="paywall-box">
+    <div style="font-size:40px">🔒</div>
+    <h2>Période d'essai expirée</h2>
+    <p class="muted">Votre mois d'essai gratuit est terminé. Pour continuer, l'abonnement est de <b>3 $ / mois</b> (payable par Mobile Money).</p>
+    <button class="primary" style="width:100%;margin-bottom:10px" onclick="paySubscription()">Payer par Mobile Money (3 $)</button>
+    <button class="soft" style="width:100%" onclick="logout()">Se déconnecter</button>
+  </div>
+</div>
+
+<!-- SECTION AUTHENTIFICATION -->
+<section id="authSection">
+  <div class="auth-box">
+    <div class="logo">📊</div>
+    <h1>Gestionnaire Intelligent</h1>
+    <p class="muted center">Solution SaaS Pro (Mobile Money compatible).</p>
     <div class="card">
-      <label>Nom du commerce</label><input id="newShop" placeholder="Ex : Boutique Marius">
-      <label>Nom du responsable</label><input id="newOwner" placeholder="Ex : Marius">
-      <button class="primary" style="width:100%" onclick="createAccount()">Créer mon espace</button>
+      <div class="tab-row">
+        <button id="tabLoginBtn" class="active-tab" onclick="switchAuthTab('login')">Connexion</button>
+        <button id="tabRegBtn" onclick="switchAuthTab('register')">Inscription</button>
+      </div>
+      
+      <!-- FORMULAIRE CONNEXION -->
+      <div id="formLogin">
+        <label>Email</label><input id="logEmail" type="email" placeholder="mon@email.com">
+        <label>Mot de passe</label><input id="logPass" type="password" placeholder="••••••••">
+        <button class="primary" style="width:100%" onclick="handleLogin()">Se connecter</button>
+        <button class="link-btn" onclick="forgotPassword()">Mot de passe oublié ?</button>
+      </div>
+
+      <!-- FORMULAIRE INSCRIPTION -->
+      <div id="formRegister" class="hidden">
+        <label>Nom du commerce</label><input id="regShop" placeholder="Ex : Boutique Marius">
+        <label>Nom du responsable</label><input id="regOwner" placeholder="Ex : Marius">
+        <label>Email</label><input id="regEmail" type="email" placeholder="mon@email.com">
+        <label>Mot de passe</label><input id="regPass" type="password" placeholder="••••••••">
+        <button class="primary" style="width:100%" onclick="handleRegister()">Créer mon compte (Essai 30j)</button>
+      </div>
     </div>
   </div>
 </section>
 
+<!-- APPLICATION PRINCIPALE -->
 <div id="app" class="hidden">
 <header><div><div class="muted" id="hello"></div><h1 id="shopTitle"></h1></div><button class="soft" onclick="show('more')">⚙️</button></header>
 <main>
 
 <section id="home">
+<div class="card" id="trialNotice" style="background:#fff8df;border-color:#fef08a">
+  <div style="font-size:13px">⏳ <b>Essai gratuit actif</b> — Il vous reste <span id="daysLeft">30</span> jour(s).</div>
+</div>
 <div class="card"><div class="muted">Tableau de bord</div><div class="grid">
 <div class="metric green"><span>Ventes</span><b id="mSales">0 FCFA</b></div>
 <div class="metric red"><span>Dépenses</span><b id="mExp">0 FCFA</b></div>
@@ -73,15 +112,14 @@ table{width:100%;border-collapse:collapse;font-size:13px}td,th{text-align:left;p
 <div class="card"><button class="soft" style="width:100%" onclick="exportCSV()">⬇️ Exporter mes données (CSV)</button></div>
 </section>
 
-<section id="more" class="hidden"><button class="back" onclick="show('home')">←</button><h2 class="title">Paramètres & prochaines fonctions</h2>
-<div class="card"><h3>Compte</h3><p class="muted">Responsable : <b id="ownerInfo"></b><br>Commerce : <b id="shopInfo"></b></p></div>
-<div class="card"><h3>🚀 Feuille de route</h3>
-<div class="item">☁️ Base de données en ligne <span class="badge">Prochaine étape</span></div>
-<div class="item">🔐 Connexion sécurisée <span class="badge">Prochaine étape</span></div>
-<div class="item">📷 Scan de codes-barres <span class="badge">À construire</span></div>
-<div class="item">🤖 IA avancée connectée <span class="badge">À construire</span></div>
-<div class="item">💳 Abonnements <span class="badge">À construire</span></div></div>
-<div class="card"><button class="danger" style="width:100%" onclick="resetAll()">Réinitialiser le prototype</button></div>
+<section id="more" class="hidden"><button class="back" onclick="show('home')">←</button><h2 class="title">Paramètres & Sécurité</h2>
+<div class="card"><h3>Compte</h3><p class="muted">Responsable : <b id="ownerInfo"></b><br>Boutique : <b id="shopInfo"></b><br>Email : <b id="emailInfo"></b></p></div>
+<div class="card"><h3>💳 Abonnement Mobile Money (3 $ / mois)</h3>
+<p class="muted">Statut : <span id="subStatus" class="badge">Actif</span></p>
+<p class="muted" style="margin-top:8px">Les abonnements sont encaissés directement sur votre compte Mobile Money via FedaPay / CinetPay.</p>
+<button class="primary" style="width:100%;margin-top:10px" onclick="paySubscription()">Payer / Renouveler (Mobile Money)</button>
+</div>
+<div class="card"><button class="danger" style="width:100%" onclick="logout()">Se déconnecter</button></div>
 </section>
 </main>
 
@@ -96,82 +134,237 @@ table{width:100%;border-collapse:collapse;font-size:13px}td,th{text-align:left;p
 </div>
 
 <script>
-const KEY='GI_V3';
-let db=JSON.parse(localStorage.getItem(KEY)||'null');
-if(db){onboarding.classList.add('hidden');app.classList.remove('hidden')}
+const USERS_KEY = 'GI_USERS_DB_V5';
+const SESSION_KEY = 'GI_CURRENT_USER_EMAIL_V5';
 
-function createAccount(){
- db={owner:(newOwner.value.trim()||'Commerçant'),shop:(newShop.value.trim()||'Mon commerce'),
- products:[{name:'Riz 25 kg',stock:12,min:5,price:18000},{name:'Huile 1 L',stock:5,min:5,price:1500},{name:'Sucre 1 kg',stock:2,min:5,price:1000}],
- sales:[],expenses:[]};
- persist();onboarding.classList.add('hidden');app.classList.remove('hidden');refresh();
+function getUsers() { return JSON.parse(localStorage.getItem(USERS_KEY) || '{}'); }
+function saveUsers(users) { localStorage.setItem(USERS_KEY, JSON.stringify(users)); }
+function getCurrentUserEmail() { return localStorage.getItem(SESSION_KEY); }
+function getCurrentUserData() {
+  const email = getCurrentUserEmail();
+  if(!email) return null;
+  return getUsers()[email] || null;
 }
-function persist(){localStorage.setItem(KEY,JSON.stringify(db));refresh()}
+function saveCurrentUserData(data) {
+  const users = getUsers();
+  users[data.email] = data;
+  saveUsers(users);
+}
+
+function switchAuthTab(tab) {
+  if(tab === 'login') {
+    formLogin.classList.remove('hidden');
+    formRegister.classList.add('hidden');
+    tabLoginBtn.classList.add('active-tab');
+    tabRegBtn.classList.remove('active-tab');
+  } else {
+    formLogin.classList.add('hidden');
+    formRegister.classList.remove('hidden');
+    tabRegBtn.classList.add('active-tab');
+    tabLoginBtn.classList.remove('active-tab');
+  }
+}
+
+function handleRegister() {
+  const shop = regShop.value.trim();
+  const owner = regOwner.value.trim();
+  const email = regEmail.value.trim().toLowerCase();
+  const pass = regPass.value;
+
+  if(!shop || !owner || !email || !pass) return alert('Veuillez remplir tous les champs.');
+  let users = getUsers();
+  if(users[email]) return alert('Cet email est déjà associé à un compte.');
+
+  users[email] = {
+    shop, owner, email, pass,
+    createdAt: new Date().getTime(),
+    isPaid: false,
+    products: [{name:'Riz 25 kg',stock:12,min:5,price:18000},{name:'Huile 1 L',stock:5,min:5,price:1500},{name:'Sucre 1 kg',stock:2,min:5,price:1000}],
+    sales: [], expenses: []
+  };
+
+  saveUsers(users);
+  localStorage.setItem(SESSION_KEY, email);
+  initAppSession();
+}
+
+function handleLogin() {
+  const email = logEmail.value.trim().toLowerCase();
+  const pass = logPass.value;
+  let users = getUsers();
+
+  if(!users[email] || users[email].pass !== pass) {
+    return alert('Email ou mot de passe incorrect.');
+  }
+
+  localStorage.setItem(SESSION_KEY, email);
+  initAppSession();
+}
+
+// Fonction de récupération de mot de passe en cas d'oubli
+function forgotPassword() {
+  const email = prompt("Entrez l'email associé à votre compte pour récupérer votre mot de passe :");
+  if(!email) return;
+  let users = getUsers();
+  const cleanEmail = email.trim().toLowerCase();
+  
+  if(users[cleanEmail]) {
+    alert("Votre compte a été retrouvé !\nVotre mot de passe actuel est : " + users[cleanEmail].pass);
+  } else {
+    alert("Aucun compte trouvé avec cet email.");
+  }
+}
+
+function logout() {
+  localStorage.removeItem(SESSION_KEY);
+  location.reload();
+}
+
+function paySubscription() {
+  let db = getCurrentUserData();
+  if(!db) return;
+  
+  let choix = confirm("Passerelle Mobile Money :\nVoulez-vous valider le paiement de 3 $ par Mobile Money pour activer votre abonnement pro ?");
+  if(choix) {
+    db.isPaid = true;
+    saveCurrentUserData(db);
+    alert('Paiement Mobile Money reçu avec succès ! Votre abonnement est actif ✅');
+    initAppSession();
+  }
+}
+
+function initAppSession() {
+  const db = getCurrentUserData();
+  if(!db) {
+    authSection.classList.remove('hidden');
+    app.classList.add('hidden');
+    paywall.classList.add('hidden');
+    return;
+  }
+
+  authSection.classList.add('hidden');
+  const now = new Date().getTime();
+  const thirtyDays = 30 * 24 * 60 * 60 * 1000;
+  const elapsed = now - db.createdAt;
+
+  if(!db.isPaid && elapsed > thirtyDays) {
+    paywall.classList.remove('hidden');
+    app.classList.add('hidden');
+  } else {
+    paywall.classList.add('hidden');
+    app.classList.remove('hidden');
+    const daysLeftVal = Math.max(0, Math.ceil((thirtyDays - elapsed)/(24*60*60*1000)));
+    if(db.isPaid) {
+      document.getElementById('trialNotice').innerHTML = '✅ <b>Abonnement Pro Actif (Mobile Money)</b>';
+      subStatus.textContent = 'Actif (Mobile Money)';
+    } else {
+      document.getElementById('daysLeft').textContent = daysLeftVal;
+      subStatus.textContent = `Essai (${daysLeftVal}j restants)`;
+    }
+    refresh();
+  }
+}
+
+let db = null;
+function persist() { saveCurrentUserData(db); refresh(); }
 function money(n){return new Intl.NumberFormat('fr-FR').format(Math.round(n))+' FCFA'}
-function totals(){return{sales:db.sales.reduce((s,x)=>s+x.total,0),exp:db.expenses.reduce((s,x)=>s+x.amount,0)}}
+function totals(){db=getCurrentUserData(); return{sales:db.sales.reduce((s,x)=>s+x.total,0),exp:db.expenses.reduce((s,x)=>s+x.amount,0)}}
+
 function show(id){
  document.querySelectorAll('main section').forEach(s=>s.classList.add('hidden'));
  document.getElementById(id).classList.remove('hidden');
  document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('active',b.dataset.page===id));
  refresh();
 }
+
 function refresh(){
+ db=getCurrentUserData();
  if(!db)return;
- hello.textContent='Bonjour, '+db.owner+' 👋';shopTitle.textContent=db.shop;ownerInfo.textContent=db.owner;shopInfo.textContent=db.shop;
+ hello.textContent='Bonjour, '+db.owner+' 👋';
+ shopTitle.textContent=db.shop;
+ ownerInfo.textContent=db.owner;
+ shopInfo.textContent=db.shop;
+ emailInfo.textContent=db.email;
+
  const t=totals(),p=t.sales-t.exp;
- mSales.textContent=money(t.sales);mExp.textContent=money(t.exp);mProfit.textContent=money(p);mStock.textContent=db.products.reduce((s,x)=>s+x.stock,0);
- saleProduct.innerHTML=db.products.map((x,i)=>`<option value="${i}">${x.name}</option>`).join('');priceFromProduct();
- renderProducts();renderReports();
+ mSales.textContent=money(t.sales);
+ mExp.textContent=money(t.exp);
+ mProfit.textContent=money(p);
+ mStock.textContent=db.products.reduce((s,x)=>s+x.stock,0);
+
+ saleProduct.innerHTML=db.products.map((x,i)=>`<option value="${i}">${x.name}</option>`).join('');
+ priceFromProduct();
+ renderProducts();
+ renderReports();
+ 
  const low=db.products.filter(x=>x.stock<=x.min);
- advice.textContent=low.length?'Stock à surveiller : '+low.slice(0,2).map(x=>x.name).join(', ')+'.':'Continue à suivre tes ventes, dépenses et stock.';
+ advice.textContent=low.length?'Stock à surveiller : '+low.slice(0,2).map(x=>x.name).join(', ')+'.':'Continue à suivre tes ventes et dépenses.';
 }
-function priceFromProduct(){const p=db?.products?.[+(saleProduct.value||0)];if(p)salePrice.value=p.price}
+
+function priceFromProduct(){ db=getCurrentUserData(); const p=db?.products?.[+(saleProduct.value||0)]; if(p)salePrice.value=p.price; }
+
 function saveSale(){
+ db=getCurrentUserData();
  const i=+saleProduct.value,q=+saleQty.value,price=+salePrice.value;
  if(!db.products[i]||q<1||price<0)return alert('Vérifie les informations.');
  if(db.products[i].stock<q)return alert('Stock insuffisant.');
- db.products[i].stock-=q;db.sales.unshift({product:db.products[i].name,qty:q,price,total:q*price,date:new Date().toLocaleString('fr-FR')});
- saleQty.value=1;persist();show('home');alert('Vente enregistrée ✅');
+ db.products[i].stock-=q;
+ db.sales.unshift({product:db.products[i].name,qty:q,price,total:q*price,date:new Date().toLocaleString('fr-FR')});
+ saleQty.value=1; persist(); show('home'); alert('Vente enregistrée ✅');
 }
+
 function saveExpense(){
- const amount=+expAmount.value;if(amount<=0)return alert('Montant invalide.');
+ db=getCurrentUserData();
+ const amount=+expAmount.value; if(amount<=0)return alert('Montant invalide.');
  db.expenses.unshift({type:expType.value,amount,desc:expDesc.value,date:new Date().toLocaleString('fr-FR')});
- expAmount.value='';expDesc.value='';persist();show('home');alert('Dépense enregistrée ✅');
+ expAmount.value=''; expDesc.value=''; persist(); show('home'); alert('Dépense enregistrée ✅');
 }
+
 function newProduct(){
- const name=prompt('Nom du produit :');if(!name)return;
+ db=getCurrentUserData();
+ const name=prompt('Nom du produit :'); if(!name)return;
  const stock=+prompt('Stock initial :','0'),min=+prompt('Seuil minimum :','5'),price=+prompt('Prix de vente :','0');
- db.products.push({name,stock:Math.max(0,stock),min:Math.max(0,min),price:Math.max(0,price)});persist();
+ db.products.push({name,stock:Math.max(0,stock),min:Math.max(0,min),price:Math.max(0,price)});
+ persist(); refresh();
 }
+
 function renderProducts(){
- if(!db)return;const q=(productSearch?.value||'').toLowerCase();
+ db=getCurrentUserData();
+ if(!db)return; 
+ const q=(productSearch?.value||'').toLowerCase();
  productList.innerHTML=db.products.filter(p=>p.name.toLowerCase().includes(q)).map(p=>{
  const c=p.stock<=p.min/2?'critical':p.stock<=p.min?'low':'',l=p.stock<=p.min/2?'Critique':p.stock<=p.min?'Faible':'En stock';
  return `<div class="item"><div class="row"><div><b>${p.name}</b><div class="muted">${p.stock} unité(s) • ${money(p.price)}</div></div><span class="badge ${c}">${l}</span></div></div>`
  }).join('')||'<p class="muted">Aucun produit.</p>';
 }
+
 function renderReports(){
- if(!db)return;const t=totals(),p=t.sales-t.exp,margin=t.sales?Math.max(0,p/t.sales*100):0;
- rSales.textContent=money(t.sales);rExp.textContent=money(t.exp);rProfit.textContent=money(p);rMargin.textContent=margin.toFixed(1)+'%';
+ db=getCurrentUserData();
+ if(!db)return; 
+ const t=totals(),p=t.sales-t.exp,margin=t.sales?Math.max(0,p/t.sales*100):0;
+ rSales.textContent=money(t.sales); rExp.textContent=money(t.exp); rProfit.textContent=money(p); rMargin.textContent=margin.toFixed(1)+'%';
  const recent=db.sales.slice(0,7),max=Math.max(1,...recent.map(x=>x.total));
  chart.innerHTML=recent.length?recent.map(x=>`<div class="bar" style="height:${Math.max(8,x.total/max*100)}%"><small>${Math.round(x.total/max*100)}%</small></div>`).join(''):'<span class="muted">Aucune vente</span>';
  if(!db.sales.length)analysis.textContent='Enregistre quelques ventes pour recevoir une analyse.';
  else{
- const counts={};db.sales.forEach(x=>counts[x.product]=(counts[x.product]||0)+x.qty);
+ const counts={}; db.sales.forEach(x=>counts[x.product]=(counts[x.product]||0)+x.qty);
  const top=Object.entries(counts).sort((a,b)=>b[1]-a[1])[0];
- analysis.innerHTML=`🏆 Produit le plus vendu : <b>${top[0]}</b> (${top[1]} unité(s)).<br>💰 Solde : <b>${money(p)}</b>.<br>📦 ${db.products.filter(x=>x.stock<=x.min).length} produit(s) ont un stock à surveiller.`;
+ analysis.innerHTML=`🏆 Produit le plus vendu : <b>${top[0]}</b> (${top[1]} unité(s)).<br>💰 Bénéfice net : <b>${money(p)}</b>.<br>📦 ${db.products.filter(x=>x.stock<=x.min).length} produit(s) ont un stock faible.`;
  }
 }
+
 function exportCSV(){
+ db=getCurrentUserData();
  const rows=[['TYPE','DATE','ELEMENT','QUANTITE','MONTANT']];
  db.sales.forEach(x=>rows.push(['VENTE',x.date,x.product,x.qty,x.total]));
  db.expenses.forEach(x=>rows.push(['DEPENSE',x.date,x.type,'',x.amount]));
  const csv=rows.map(r=>r.map(v=>`"${String(v).replaceAll('"','""')}"`).join(';')).join('\n');
  const blob=new Blob([csv],{type:'text/csv;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');
- a.href=url;a.download='gestionnaire_intelligent_export.csv';a.click();URL.revokeObjectURL(url);
+ a.href=url; a.download='gestionnaire_intelligent_export.csv'; a.click(); URL.revokeObjectURL(url);
 }
-function resetAll(){if(confirm('Effacer le compte et toutes les données de ce prototype ?')){localStorage.removeItem(KEY);location.reload()}}
-refresh();
+
+initAppSession();
 </script>
 </body>
 </html>
+
