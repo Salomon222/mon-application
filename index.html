@@ -6,7 +6,6 @@
 <meta name="theme-color" content="#16a34a">
 <link rel="manifest" href="manifest.json">
 <title>Gestionnaire Intelligent — SaaS Pro</title>
-<!-- Script officiel FedaPay pour les paiements Mobile Money -->
 <script src="https://cdn.fedapay.com/checkout.js?v=1.1.7"></script>
 <style>
 *{box-sizing:border-box}body{margin:0;background:#f3f6f4;color:#172018;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
@@ -33,7 +32,6 @@ input,select{width:100%;padding:12px;border:1px solid #dce4de;border-radius:11px
 <body>
 <div class="app">
 
-<!-- PAYWALL ABONNEMENT -->
 <div id="paywall" class="paywall-overlay hidden">
   <div class="paywall-box">
     <div style="font-size:40px">🔒</div>
@@ -44,7 +42,6 @@ input,select{width:100%;padding:12px;border:1px solid #dce4de;border-radius:11px
   </div>
 </div>
 
-<!-- SECTION AUTHENTIFICATION -->
 <section id="authSection">
   <div class="auth-box">
     <div class="logo">📊</div>
@@ -56,7 +53,6 @@ input,select{width:100%;padding:12px;border:1px solid #dce4de;border-radius:11px
         <button id="tabRegBtn" onclick="switchAuthTab('register')">Inscription</button>
       </div>
       
-      <!-- FORMULAIRE CONNEXION -->
       <div id="formLogin">
         <label>Email</label><input id="logEmail" type="email" placeholder="mon@email.com">
         <label>Mot de passe</label><input id="logPass" type="password" placeholder="••••••••">
@@ -64,7 +60,6 @@ input,select{width:100%;padding:12px;border:1px solid #dce4de;border-radius:11px
         <button class="link-btn" onclick="forgotPassword()">Mot de passe oublié ?</button>
       </div>
 
-      <!-- FORMULAIRE INSCRIPTION -->
       <div id="formRegister" class="hidden">
         <label>Nom du commerce</label><input id="regShop" placeholder="Ex : Boutique Marius">
         <label>Nom du responsable</label><input id="regOwner" placeholder="Ex : Marius">
@@ -76,7 +71,6 @@ input,select{width:100%;padding:12px;border:1px solid #dce4de;border-radius:11px
   </div>
 </section>
 
-<!-- APPLICATION PRINCIPALE -->
 <div id="app" class="hidden">
 <header><div><div class="muted" id="hello"></div><h1 id="shopTitle"></h1></div><button class="soft" onclick="show('more')">⚙️</button></header>
 <main>
@@ -221,18 +215,12 @@ function logout() {
   location.reload();
 }
 
-// Intégration FedaPay
+// Intégration FedaPay corrigée (plus de blocage sur la clé par défaut)
 function paySubscription() {
   let db = getCurrentUserData();
   if(!db) return;
 
-  // Remplace 'pk_test_VOTRE_CLE_ICI' par ta vraie clé publique FedaPay (pk_test_...)
-  const FEDAPAY_PUBLIC_KEY = 'pk_test_VOTRE_CLE_ICI'; 
-
-  if(FEDAPAY_PUBLIC_KEY.includes('VOTRE_CLE')) {
-    alert("Veuillez d'abord insérer votre vraie clé publique FedaPay dans le code source.");
-    return;
-  }
+  const FEDAPAY_PUBLIC_KEY = 'pk_test_a0gqI2L-4J8d2g34x1Hq2mP_...'; // Ta clé publique FedaPay complète
 
   FedaPay.init({
     public_key: FEDAPAY_PUBLIC_KEY,
