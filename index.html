@@ -1,206 +1,685 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestionnaire Intelligent</title>
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f4f7f6;
-            color: #333;
-            padding: 20px;
-        }
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: #4A0E4E;
-            color: white;
-            padding: 15px 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-        }
-        h1 {
-            font-size: 1.1rem;
-        }
-        .language-container {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        select {
-            padding: 6px 10px;
-            border-radius: 4px;
-            border: none;
-            background: white;
-            color: #333;
-            font-weight: bold;
-            cursor: pointer;
-        }
-        .card {
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            margin-bottom: 15px;
-        }
-        .card h2 {
-            color: #4A0E4E;
-            margin-bottom: 10px;
-            font-size: 1.1rem;
-        }
-        .card p {
-            color: #666;
-            font-size: 0.95rem;
-            line-height: 1.4;
-            margin-bottom: 10px;
-        }
-        input, select.form-control {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-        }
-        .btn-primary {
-            background-color: #6200ee;
-            color: white;
-            border: none;
-            padding: 12px;
-            border-radius: 6px;
-            cursor: pointer;
-            width: 100%;
-            font-size: 1rem;
-            font-weight: bold;
-            margin-top: 5px;
-            transition: background 0.2s;
-        }
-        .btn-primary:active {
-            background-color: #3700b3;
-        }
-    </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#16a34a">
+<title id="page-title">Gestionnaire Intelligent — SaaS Pro</title>
+<script src="https://cdn.fedapay.com/checkout.js?v=1.1.7"></script>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f3f6f4;color:#172018;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+.app{max-width:500px;margin:auto;min-height:100vh;background:#fff;position:relative}.hidden{display:none!important}
+header{padding:18px 16px 10px;display:flex;justify-content:space-between;align-items:center}h1{font-size:22px;margin:0}.muted{color:#68736c;font-size:13px}
+main{padding:0 15px 92px}.card{background:#fff;border:1px solid #e3e9e5;border-radius:17px;padding:15px;margin:12px 0;box-shadow:0 2px 10px #00000007}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.metric{padding:13px;border-radius:14px}.metric span{font-size:12px}.metric b{display:block;font-size:18px;margin-top:5px}
+.green{background:#e9f8ed}.red{background:#fff0ef}.blue{background:#edf5ff}.yellow{background:#fff8df}.purple{background:#f3edff}
+button{border:0;border-radius:11px;padding:12px 14px;font-weight:750;cursor:pointer}.primary{background:#16a34a;color:#fff}.soft{background:#edf2ee;color:#263229}.danger{background:#fff0ef;color:#b42318}
+input,select{width:100%;padding:12px;border:1px solid #dce4de;border-radius:11px;margin:6px 0 11px;font-size:15px;background:#fff}label{font-size:13px;font-weight:700}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:9px}.actions button{min-height:52px}.row{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(500px,100%);display:grid;grid-template-columns:repeat(5,1fr);background:#fff;border-top:1px solid #e3e9e5;z-index:10;padding:6px 2px}.nav button{background:none;color:#667169;font-size:10px;padding:7px 2px}.nav button.active{color:#16a34a}
+.badge{font-size:11px;padding:5px 8px;border-radius:20px;background:#e9f8ed;color:#17783a}.low{background:#fff3d4;color:#9a6900}.critical{background:#ffe9e7;color:#b42318}
+.item{padding:12px 0;border-bottom:1px solid #edf0ee}.item:last-child{border:0}.back{background:none;padding:0;font-size:24px}.title{font-size:20px;margin:9px 0 15px}
+.notice{border:1px solid #ccefd4;background:#effaf2;border-radius:14px;padding:13px;font-size:13px}
+.barbox{height:150px;display:flex;align-items:flex-end;gap:7px;border-top:1px solid #edf0ee;padding:14px 3px 5px}.bar{flex:1;min-height:5px;background:#bde6c8;border-radius:6px 6px 2px 2px;position:relative}.bar small{position:absolute;bottom:-18px;width:100%;text-align:center;font-size:9px}
+.auth-box{padding:30px 20px}.logo{text-align:center;font-size:45px}.auth-box h1{text-align:center;margin-bottom:5px}.center{text-align:center}
+.paywall-overlay{position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(255,255,255,0.96);z-index:100;display:flex;flex-direction:column;justify-content:center;padding:24px;text-align:center}
+.paywall-box{background:#fff;border:1px solid #e3e9e5;border-radius:20px;padding:24px;box-shadow:0 10px 30px rgba(0,0,0,0.1)}
+.tab-row{display:flex;gap:10px;margin-bottom:15px}.tab-row button{flex:1;background:#edf2ee;color:#68736c}.tab-row button.active-tab{background:#16a34a;color:#fff}
+.link-btn{background:none;color:#16a34a;padding:5px 0;font-size:13px;text-align:center;width:100%;cursor:pointer;margin-top:5px}
+.lang-select-container { display: flex; align-items: center; gap: 5px; }
+.lang-select-container select { width: auto; margin: 0; padding: 6px 8px; font-size: 13px; background: #edf2ee; border-radius: 8px; }
+</style>
 </head>
 <body>
+<div class="app">
 
-    <header>
-        <h1 id="app-title">Gestionnaire Intelligent</h1>
-        <div class="language-container">
-            <label for="langSelect" id="label-lang" style="font-size: 0.85rem;">Langue :</label>
-            <select id="langSelect" onchange="switchLanguage(this.value)">
-                <option value="fr">Français</option>
-                <option value="en">English</option>
-            </select>
-        </div>
-    </header>
+<!-- PAYWALL ABONNEMENT -->
+<div id="paywall" class="paywall-overlay hidden">
+  <div class="paywall-box">
+    <div style="font-size:40px">🔒</div>
+    <h2 id="paywall-title">Période d'essai expirée</h2>
+    <p class="muted" id="paywall-desc">Votre mois d'essai gratuit est terminé. Pour continuer, l'abonnement est de <b>3 $ / mois</b> (payable par Mobile Money).</p>
+    <button class="primary" style="width:100%;margin-bottom:10px" onclick="paySubscription()" id="paywall-btn">Payer par Mobile Money (3 $)</button>
+    <button class="soft" style="width:100%" onclick="logout()" id="paywall-logout">Se déconnecter</button>
+  </div>
+</div>
 
-    <main>
-        <div class="card">
-            <h2 id="welcome-msg">Bienvenue</h2>
-            <p id="desc-msg">Gérez vos ventes, vos stocks et suivez vos activités en toute simplicité depuis votre mobile.</p>
-        </div>
+<!-- SECTION AUTHENTIFICATION -->
+<section id="authSection">
+  <div class="auth-box">
+    <div class="logo">📊</div>
+    <h1 id="auth-main-title">Gestionnaire Intelligent</h1>
+    <p class="muted center" id="auth-subtitle">Solution SaaS Pro (FedaPay Mobile Money).</p>
+    <div class="card">
+      <div class="tab-row">
+        <button id="tabLoginBtn" class="active-tab" onclick="switchAuthTab('login')">Connexion</button>
+        <button id="tabRegBtn" onclick="switchAuthTab('register')">Inscription</button>
+      </div>
+      
+      <!-- FORMULAIRE CONNEXION -->
+      <div id="formLogin">
+        <label id="lbl-log-email">Email</label><input id="logEmail" type="email" placeholder="mon@email.com">
+        <label id="lbl-log-pass">Mot de passe</label><input id="logPass" type="password" placeholder="••••••••">
+        <button class="primary" style="width:100%" onclick="handleLogin()" id="btn-login">Se connecter</button>
+        <button class="link-btn" onclick="forgotPassword()" id="btn-forgot">Mot de passe oublié ?</button>
+      </div>
 
-        <div class="card">
-            <h2 id="sales-title">Enregistrer une vente</h2>
-            <input type="text" id="input-product" placeholder="Nom du produit / Product name">
-            <input type="number" id="input-price" placeholder="Montant / Price">
-            <button class="btn-primary" id="btn-save-sale" onclick="enregistrerVente()">Valider la vente</button>
-        </div>
+      <!-- FORMULAIRE INSCRIPTION -->
+      <div id="formRegister" class="hidden">
+        <label id="lbl-reg-shop">Nom du commerce</label><input id="regShop" placeholder="Ex : Ma Boutique">
+        <label id="lbl-reg-owner">Nom du responsable</label><input id="regOwner" placeholder="Ex : Jean">
+        <label id="lbl-reg-email">Email</label><input id="regEmail" type="email" placeholder="mon@email.com">
+        <label id="lbl-reg-pass">Mot de passe</label><input id="regPass" type="password" placeholder="••••••••">
+        <button class="primary" style="width:100%" onclick="handleRegister()" id="btn-register">Créer mon compte (Essai 30j)</button>
+      </div>
+    </div>
+  </div>
+</section>
 
-        <div class="card">
-            <h2 id="stock-title">État du stock</h2>
-            <p id="stock-info">Aucun article enregistré pour le moment.</p>
-            <button class="btn-primary" id="btn-manage-stock" onclick="alerteStock()">Gérer les stocks</button>
-        </div>
-    </main>
+<!-- APPLICATION PRINCIPALE -->
+<div id="app" class="hidden">
+<header>
+  <div><div class="muted" id="hello"></div><h1 id="shopTitle"></h1></div>
+  <div class="lang-select-container">
+    <select id="globalLangSelect" onchange="switchLanguage(this.value)">
+      <option value="fr">🇫🇷 FR</option>
+      <option value="en">🇬🇧 EN</option>
+    </select>
+    <button class="soft" onclick="show('more')">⚙️</button>
+  </div>
+</header>
+<main>
 
-    <script>
-        // Dictionnaire complet des traductions de l'application
-        const translations = {
-            fr: {
-                appTitle: "Gestionnaire Intelligent",
-                labelLang: "Langue :",
-                welcome: "Bienvenue",
-                description: "Gérez vos ventes, vos stocks et suivez vos activités en toute simplicité depuis votre mobile.",
-                salesTitle: "Enregistrer une vente",
-                placeholderProduct: "Nom du produit",
-                placeholderPrice: "Montant",
-                saveSaleBtn: "Valider la vente",
-                stockTitle: "État du stock",
-                stockInfo: "Aucun article enregistré pour le moment.",
-                manageStockBtn: "Gérer les stocks"
-            },
-            en: {
-                appTitle: "Smart Manager",
-                labelLang: "Language :",
-                welcome: "Welcome",
-                description: "Manage your sales, inventory, and track your business easily from your mobile device.",
-                salesTitle: "Record a Sale",
-                placeholderProduct: "Product name",
-                placeholderPrice: "Price",
-                saveSaleBtn: "Confirm Sale",
-                stockTitle: "Inventory Status",
-                stockInfo: "No items registered yet.",
-                manageStockBtn: "Manage Stock"
-            }
-        };
+<section id="home">
+<div class="card" id="trialNotice" style="background:#fff8df;border-color:#fef08a">
+  <div style="font-size:13px">⏳ <b id="trial-active-txt">Essai gratuit actif</b> — <span id="trial-left-txt">Il vous reste</span> <span id="daysLeft">30</span> <span id="trial-days-txt">jour(s).</span></div>
+</div>
+<div class="card"><div class="muted" id="dash-title">Tableau de bord</div><div class="grid">
+<div class="metric green"><span id="metric-sales-lbl">Ventes</span><b id="mSales">0 FCFA</b></div>
+<div class="metric red"><span id="metric-exp-lbl">Dépenses</span><b id="mExp">0 FCFA</b></div>
+<div class="metric blue"><span id="metric-profit-lbl">Bénéfice</span><b id="mProfit">0 FCFA</b></div>
+<div class="metric yellow"><span id="metric-stock-lbl">Stock</span><b id="mStock">0</b></div>
+</div></div>
+<div class="card"><h3 id="quick-actions-title">Actions rapides</h3><div class="actions">
+<button class="primary" onclick="show('sale')" id="quick-btn-sale">＋ Vente</button><button class="soft" onclick="show('expense')" id="quick-btn-exp">＋ Dépense</button>
+<button class="soft" onclick="show('products')" id="quick-btn-prod">📦 Produits</button><button class="soft" onclick="show('reports')" id="quick-btn-rep">📈 Rapports</button>
+</div></div>
+<div class="notice">🤖 <b id="advice-title">Conseil</b><br><span id="advice">Commence par ajouter tes produits dans l'onglet Stock.</span></div>
+</section>
 
-        // Fonction pour changer la langue dynamiquement
-        function switchLanguage(lang) {
-            localStorage.setItem('app_lang', lang);
-            
-            // Textes principaux
-            document.getElementById('app-title').innerText = translations[lang].appTitle;
-            document.getElementById('label-lang').innerText = translations[lang].labelLang;
-            document.getElementById('welcome-msg').innerText = translations[lang].welcome;
-            document.getElementById('desc-msg').innerText = translations[lang].description;
-            
-            // Section Ventes
-            document.getElementById('sales-title').innerText = translations[lang].salesTitle;
-            document.getElementById('input-product').placeholder = translations[lang].placeholderProduct;
-            document.getElementById('input-price').placeholder = translations[lang].placeholderPrice;
-            document.getElementById('btn-save-sale').innerText = translations[lang].saveSaleBtn;
-            
-            // Section Stocks
-            document.getElementById('stock-title').innerText = translations[lang].stockTitle;
-            document.getElementById('stock-info').innerText = translations[lang].stockInfo;
-            document.getElementById('btn-manage-stock').innerText = translations[lang].manageStockBtn;
-        }
+<section id="sale" class="hidden"><button class="back" onclick="show('home')">←</button><h2 class="title" id="sale-page-title">Nouvelle vente</h2>
+<div class="card"><label id="lbl-sale-prod">Produit</label><select id="saleProduct" onchange="priceFromProduct()"></select><label id="lbl-sale-qty">Quantité</label><input id="saleQty" type="number" min="1" value="1"><label id="lbl-sale-price">Prix unitaire</label><input id="salePrice" type="number" min="0"><button class="primary" style="width:100%" onclick="saveSale()" id="btn-save-sale">Enregistrer</button></div></section>
 
-        // Actions interactives basiques
-        function enregistrerVente() {
-            const produit = document.getElementById('input-product').value;
-            const prix = document.getElementById('input-price').value;
-            if(!produit || !prix) {
-                alert("Veuillez remplir tous les champs !");
-                return;
-            }
-            alert("Vente enregistrée avec succès : " + produit + " (" + prix + " FCFA)");
-            document.getElementById('input-product').value = '';
-            document.getElementById('input-price').value = '';
-        }
+<section id="expense" class="hidden"><button class="back" onclick="show('home')">←</button><h2 class="title" id="exp-page-title">Nouvelle dépense</h2>
+<div class="card"><label id="lbl-exp-cat">Catégorie</label><select id="expType">
+  <option id="opt-merch">Marchandise</option><option id="opt-trans">Transport</option><option id="opt-elec">Électricité</option><option id="opt-rent">Loyer</option><option id="opt-sal">Salaires</option><option id="opt-other">Autre</option>
+</select><label id="lbl-exp-amt">Montant</label><input id="expAmount" type="number" min="0"><label id="lbl-exp-desc">Description</label><input id="expDesc" placeholder="Ex : livraison"><button class="primary" style="width:100%" onclick="saveExpense()" id="btn-save-exp">Enregistrer</button></div></section>
 
-        function alerteStock() {
-            const currentLang = localStorage.getItem('app_lang') || 'fr';
-            if(currentLang === 'en') {
-                alert("Inventory management coming soon!");
-            } else {
-                alert("Module de gestion des stocks bientôt disponible !");
-            }
-        }
+<section id="products" class="hidden"><button class="back" onclick="show('home')">←</button><h2 class="title" id="prod-page-title">Produits & stock</h2>
+<div class="card"><input id="productSearch" placeholder="🔎 Rechercher" oninput="renderProducts()"><div id="productList"></div><button class="primary" style="width:100%;margin-top:10px" onclick="newProduct()" id="btn-add-prod">＋ Ajouter un produit</button></div></section>
 
-        // Chargement automatique de la langue préférée au démarrage
-        window.onload = function() {
-            const savedLang = localStorage.getItem('app_lang') || 'fr';
-            document.getElementById('langSelect').value = savedLang;
-            switchLanguage(savedLang);
-        };
-    </script>
+<section id="reports" class="hidden"><button class="back" onclick="show('home')">←</button><h2 class="title" id="rep-page-title">Rapports</h2>
+<div class="grid"><div class="metric green"><span id="rep-sales-lbl">Ventes</span><b id="rSales">0</b></div><div class="metric red"><span id="rep-exp-lbl">Dépenses</span><b id="rExp">0</b></div><div class="metric blue"><span id="rep-profit-lbl">Bénéfice</span><b id="rProfit">0</b></div><div class="metric purple"><span id="rep-margin-lbl">Marge</span><b id="rMargin">0%</b></div></div>
+<div class="card"><h3 id="rep-recent-title">Ventes récentes</h3><div class="barbox" id="chart"></div></div>
+<div class="card"><h3 id="rep-ai-title">🤖 Analyse intelligente</h3><p id="analysis" class="muted"></p></div>
+<div class="card"><button class="soft" style="width:100%" onclick="exportCSV()" id="btn-export">⬇️ Exporter mes données (CSV)</button></div>
+</section>
 
+<section id="more" class="hidden"><button class="back" onclick="show('home')">←</button><h2 class="title" id="settings-page-title">Paramètres & Sécurité</h2>
+<div class="card"><h3 id="set-account-title">Compte</h3><p class="muted"><span id="set-owner-lbl">Responsable</span> : <b id="ownerInfo"></b><br><span id="set-shop-lbl">Boutique</span> : <b id="shopInfo"></b><br>Email : <b id="emailInfo"></b></p></div>
+<div class="card"><h3 id="set-sub-title">💳 Abonnement Mobile Money (3 $ / mois)</h3>
+<p class="muted"><span id="set-status-lbl">Statut</span> : <span id="subStatus" class="badge">Actif</span></p>
+<p class="muted" style="margin-top:8px" id="set-sub-desc">Les abonnements sont encaissés directement sur votre compte Mobile Money via FedaPay.</p>
+<button class="primary" style="width:100%;margin-top:10px" onclick="paySubscription()" id="btn-pay-sub">Payer / Renouveler (FedaPay)</button>
+</div>
+<div class="card"><button class="danger" style="width:100%" onclick="logout()" id="btn-logout">Se déconnecter</button></div>
+</section>
+</main>
+
+<nav class="nav">
+<button data-page="home" onclick="show('home')">⌂<br><span id="nav-home">Accueil</span></button>
+<button data-page="sale" onclick="show('sale')">＋<br><span id="nav-sale">Vente</span></button>
+<button data-page="products" onclick="show('products')">▣<br><span id="nav-stock">Stock</span></button>
+<button data-page="reports" onclick="show('reports')">◒<br><span id="nav-reports">Rapports</span></button>
+<button data-page="more" onclick="show('more')">⋯<br><span id="nav-more">Plus</span></button>
+</nav>
+</div>
+</div>
+
+<script>
+const USERS_KEY = 'GI_USERS_DB_V6';
+const SESSION_KEY = 'GI_CURRENT_USER_EMAIL_V6';
+const LANG_KEY = 'GI_APP_LANG_V1';
+
+// Dictionnaire de traduction (Français / Anglais)
+const translations = {
+  fr: {
+    pageTitle: "Gestionnaire Intelligent — SaaS Pro",
+    paywallTitle: "Période d'essai expirée",
+    paywallDesc: "Votre mois d'essai gratuit est terminé. Pour continuer, l'abonnement est de <b>3 $ / mois</b> (payable par Mobile Money).",
+    paywallBtn: "Payer par Mobile Money (3 $)",
+    paywallLogout: "Se déconnecter",
+    authMainTitle: "Gestionnaire Intelligent",
+    authSubtitle: "Solution SaaS Pro (FedaPay Mobile Money).",
+    tabLoginBtn: "Connexion",
+    tabRegBtn: "Inscription",
+    lblLogEmail: "Email",
+    lblLogPass: "Mot de passe",
+    btnLogin: "Se connecter",
+    btnForgot: "Mot de passe oublié ?",
+    lblRegShop: "Nom du commerce",
+    lblRegOwner: "Nom du responsable",
+    lblRegEmail: "Email",
+    lblRegPass: "Mot de passe",
+    btnRegister: "Créer mon compte (Essai 30j)",
+    trialActiveTxt: "Essai gratuit actif",
+    trialLeftTxt: "Il vous reste",
+    trialDaysTxt: "jour(s).",
+    dashTitle: "Tableau de bord",
+    metricSales: "Ventes",
+    metricExp: "Dépenses",
+    metricProfit: "Bénéfice",
+    metricStock: "Stock",
+    quickActionsTitle: "Actions rapides",
+    quickBtnSale: "＋ Vente",
+    quickBtnExp: "＋ Dépense",
+    quickBtnProd: "📦 Produits",
+    quickBtnRep: "📈 Rapports",
+    adviceTitle: "Conseil",
+    defaultAdvice: "Commence par ajouter tes produits dans l'onglet Stock.",
+    salePageTitle: "Nouvelle vente",
+    lblSaleProd: "Produit",
+    lblSaleQty: "Quantité",
+    lblSalePrice: "Prix unitaire",
+    btnSaveSale: "Enregistrer",
+    expPageTitle: "Nouvelle dépense",
+    lblExpCat: "Catégorie",
+    optMerch: "Marchandise",
+    optTrans: "Transport",
+    optElec: "Électricité",
+    optRent: "Loyer",
+    optSal: "Salaires",
+    optOther: "Autre",
+    lblExpAmt: "Montant",
+    lblExpDesc: "Description",
+    btnSaveExp: "Enregistrer",
+    prodPageTitle: "Produits & stock",
+    searchPlaceholder: "🔎 Rechercher",
+    btnAddProd: "＋ Ajouter un produit",
+    repPageTitle: "Rapports",
+    repSales: "Ventes",
+    repExp: "Dépenses",
+    repProfit: "Bénéfice",
+    repMargin: "Marge",
+    repRecentTitle: "Ventes récentes",
+    repAiTitle: "🤖 Analyse intelligente",
+    btnExport: "⬇️ Exporter mes données (CSV)",
+    settingsPageTitle: "Paramètres & Sécurité",
+    setAccountTitle: "Compte",
+    setOwnerLbl: "Responsable",
+    setShopLbl: "Boutique",
+    setSubTitle: "💳 Abonnement Mobile Money (3 $ / mois)",
+    setStatusLbl: "Statut",
+    setSubDesc: "Les abonnements sont encaissés directement sur votre compte Mobile Money via FedaPay.",
+    btnPaySub: "Payer / Renouveler (FedaPay)",
+    btnLogout: "Se déconnecter",
+    navHome: "Accueil",
+    navSale: "Vente",
+    navStock: "Stock",
+    navReports: "Rapports",
+    navMore: "Plus"
+  },
+  en: {
+    pageTitle: "Smart Manager — SaaS Pro",
+    paywallTitle: "Trial period expired",
+    paywallDesc: "Your free trial month has ended. To continue, the subscription is <b>$3 / month</b> (payable via Mobile Money).",
+    paywallBtn: "Pay via Mobile Money ($3)",
+    paywallLogout: "Log out",
+    authMainTitle: "Smart Manager",
+    authSubtitle: "SaaS Pro Solution (FedaPay Mobile Money).",
+    tabLoginBtn: "Login",
+    tabRegBtn: "Register",
+    lblLogEmail: "Email",
+    lblLogPass: "Password",
+    btnLogin: "Log In",
+    btnForgot: "Forgot password?",
+    lblRegShop: "Shop Name",
+    lblRegOwner: "Owner Name",
+    lblRegEmail: "Email",
+    lblRegPass: "Password",
+    btnRegister: "Create account (30d Trial)",
+    trialActiveTxt: "Free trial active",
+    trialLeftTxt: "You have",
+    trialDaysTxt: "day(s) left.",
+    dashTitle: "Dashboard",
+    metricSales: "Sales",
+    metricExp: "Expenses",
+    metricProfit: "Profit",
+    metricStock: "Stock",
+    quickActionsTitle: "Quick Actions",
+    quickBtnSale: "＋ Sale",
+    quickBtnExp: "＋ Expense",
+    quickBtnProd: "📦 Products",
+    quickBtnRep: "📈 Reports",
+    adviceTitle: "Tip",
+    defaultAdvice: "Start by adding your products in the Stock tab.",
+    salePageTitle: "New Sale",
+    lblSaleProd: "Product",
+    lblSaleQty: "Quantity",
+    lblSalePrice: "Unit Price",
+    btnSaveSale: "Save",
+    expPageTitle: "New Expense",
+    lblExpCat: "Category",
+    optMerch: "Merchandise",
+    optTrans: "Transport",
+    optElec: "Electricity",
+    optRent: "Rent",
+    optSal: "Salaries",
+    optOther: "Other",
+    lblExpAmt: "Amount",
+    lblExpDesc: "Description",
+    btnSaveExp: "Save",
+    prodPageTitle: "Products & Stock",
+    searchPlaceholder: "🔎 Search",
+    btnAddProd: "＋ Add a product",
+    repPageTitle: "Reports",
+    repSales: "Sales",
+    repExp: "Expenses",
+    repProfit: "Profit",
+    repMargin: "Margin",
+    repRecentTitle: "Recent Sales",
+    repAiTitle: "🤖 Intelligent Analysis",
+    btnExport: "⬇️ Export my data (CSV)",
+    settingsPageTitle: "Settings & Security",
+    setAccountTitle: "Account",
+    setOwnerLbl: "Owner",
+    setShopLbl: "Shop",
+    setSubTitle: "💳 Mobile Money Subscription ($3 / mo)",
+    setStatusLbl: "Status",
+    setSubDesc: "Subscriptions are collected directly on your Mobile Money account via FedaPay.",
+    btnPaySub: "Pay / Renew (FedaPay)",
+    btnLogout: "Log out",
+    navHome: "Home",
+    navSale: "Sale",
+    navStock: "Stock",
+    navReports: "Reports",
+    navMore: "More"
+  }
+};
+
+function switchLanguage(lang) {
+  localStorage.setItem(LANG_KEY, lang);
+  const t = translations[lang];
+  
+  document.getElementById('page-title').textContent = t.pageTitle;
+  document.getElementById('paywall-title').innerHTML = t.paywallTitle;
+  document.getElementById('paywall-desc').innerHTML = t.paywallDesc;
+  document.getElementById('paywall-btn').textContent = t.paywallBtn;
+  document.getElementById('paywall-logout').textContent = t.paywallLogout;
+  
+  document.getElementById('auth-main-title').textContent = t.authMainTitle;
+  document.getElementById('auth-subtitle').textContent = t.authSubtitle;
+  document.getElementById('tabLoginBtn').textContent = t.tabLoginBtn;
+  document.getElementById('tabRegBtn').textContent = t.tabRegBtn;
+  
+  document.getElementById('lbl-log-email').textContent = t.lblLogEmail;
+  document.getElementById('lbl-log-pass').textContent = t.lblLogPass;
+  document.getElementById('btn-login').textContent = t.btnLogin;
+  document.getElementById('btn-forgot').textContent = t.btnForgot;
+  
+  document.getElementById('lbl-reg-shop').textContent = t.lblRegShop;
+  document.getElementById('lbl-reg-owner').textContent = t.lblRegOwner;
+  document.getElementById('lbl-reg-email').textContent = t.lblRegEmail;
+  document.getElementById('lbl-reg-pass').textContent = t.lblRegPass;
+  document.getElementById('btn-register').textContent = t.btnRegister;
+  
+  document.getElementById('trial-active-txt').textContent = t.trialActiveTxt;
+  document.getElementById('trial-left-txt').textContent = t.trialLeftTxt;
+  document.getElementById('trial-days-txt').textContent = t.trialDaysTxt;
+  document.getElementById('dash-title').textContent = t.dashTitle;
+  
+  document.getElementById('metric-sales-lbl').textContent = t.metricSales;
+  document.getElementById('metric-exp-lbl').textContent = t.metricExp;
+  document.getElementById('metric-profit-lbl').textContent = t.metricProfit;
+  document.getElementById('metric-stock-lbl').textContent = t.metricStock;
+  
+  document.getElementById('quick-actions-title').textContent = t.quickActionsTitle;
+  document.getElementById('quick-btn-sale').textContent = t.quickBtnSale;
+  document.getElementById('quick-btn-exp').textContent = t.quickBtnExp;
+  document.getElementById('quick-btn-prod').textContent = t.quickBtnProd;
+  document.getElementById('quick-btn-rep').textContent = t.quickBtnRep;
+  document.getElementById('advice-title').textContent = t.adviceTitle;
+  
+  document.getElementById('sale-page-title').textContent = t.salePageTitle;
+  document.getElementById('lbl-sale-prod').textContent = t.lblSaleProd;
+  document.getElementById('lbl-sale-qty').textContent = t.lblSaleQty;
+  document.getElementById('lbl-sale-price').textContent = t.lblSalePrice;
+  document.getElementById('btn-save-sale').textContent = t.btnSaveSale;
+  
+  document.getElementById('exp-page-title').textContent = t.expPageTitle;
+  document.getElementById('lbl-exp-cat').textContent = t.lblExpCat;
+  document.getElementById('opt-merch').textContent = t.optMerch;
+  document.getElementById('opt-trans').textContent = t.optTrans;
+  document.getElementById('opt-elec').textContent = t.optElec;
+  document.getElementById('opt-rent').textContent = t.optRent;
+  document.getElementById('opt-sal').textContent = t.optSal;
+  document.getElementById('opt-other').textContent = t.optOther;
+  document.getElementById('lbl-exp-amt').textContent = t.lblExpAmt;
+  document.getElementById('lbl-exp-desc').textContent = t.lblExpDesc;
+  document.getElementById('btn-save-exp').textContent = t.btnSaveExp;
+  
+  document.getElementById('prod-page-title').textContent = t.prodPageTitle;
+  document.getElementById('productSearch').placeholder = t.searchPlaceholder;
+  document.getElementById('btn-add-prod').textContent = t.btnAddProd;
+  
+  document.getElementById('rep-page-title').textContent = t.repPageTitle;
+  document.getElementById('rep-sales-lbl').textContent = t.repSales;
+  document.getElementById('rep-exp-lbl').textContent = t.repExp;
+  document.getElementById('rep-profit-lbl').textContent = t.repProfit;
+  document.getElementById('rep-margin-lbl').textContent = t.repMargin;
+  document.getElementById('rep-recent-title').textContent = t.repRecentTitle;
+  document.getElementById('rep-ai-title').textContent = t.repAiTitle;
+  document.getElementById('btn-export').textContent = t.btnExport;
+  
+  document.getElementById('settings-page-title').textContent = t.settingsPageTitle;
+  document.getElementById('set-account-title').textContent = t.setAccountTitle;
+  document.getElementById('set-owner-lbl').textContent = t.setOwnerLbl;
+  document.getElementById('set-shop-lbl').textContent = t.setShopLbl;
+  document.getElementById('set-sub-title').textContent = t.setSubTitle;
+  document.getElementById('set-status-lbl').textContent = t.setStatusLbl;
+  document.getElementById('set-sub-desc').textContent = t.setSubDesc;
+  document.getElementById('btn-pay-sub').textContent = t.btnPaySub;
+  document.getElementById('btn-logout').textContent = t.btnLogout;
+  
+  document.getElementById('nav-home').textContent = t.navHome;
+  document.getElementById('nav-sale').textContent = t.navSale;
+  document.getElementById('nav-stock').textContent = t.navStock;
+  document.getElementById('nav-reports').textContent = t.navReports;
+  document.getElementById('nav-more').textContent = t.navMore;
+  
+  refresh();
+}
+
+function getCurrentLang() {
+  return localStorage.getItem(LANG_KEY) || 'fr';
+}
+
+function getUsers() { return JSON.parse(localStorage.getItem(USERS_KEY) || '{}'); }
+function saveUsers(users) { localStorage.setItem(USERS_KEY, JSON.stringify(users)); }
+function getCurrentUserEmail() { return localStorage.getItem(SESSION_KEY); }
+function getCurrentUserData() {
+  const email = getCurrentUserEmail();
+  if(!email) return null;
+  return getUsers()[email] || null;
+}
+function saveCurrentUserData(data) {
+  const users = getUsers();
+  users[data.email] = data;
+  saveUsers(users);
+}
+
+function switchAuthTab(tab) {
+  if(tab === 'login') {
+    formLogin.classList.remove('hidden');
+    formRegister.classList.add('hidden');
+    tabLoginBtn.classList.add('active-tab');
+    tabRegBtn.classList.remove('active-tab');
+  } else {
+    formLogin.classList.add('hidden');
+    formRegister.classList.remove('hidden');
+    tabRegBtn.classList.add('active-tab');
+    tabLoginBtn.classList.remove('active-tab');
+  }
+}
+
+function handleRegister() {
+  const shop = regShop.value.trim();
+  const owner = regOwner.value.trim();
+  const email = regEmail.value.trim().toLowerCase();
+  const pass = regPass.value;
+
+  const lang = getCurrentLang();
+  const msg = lang === 'en' ? 'Please fill in all fields.' : 'Veuillez remplir tous les champs.';
+  const errEmail = lang === 'en' ? 'This email is already associated with an account.' : 'Cet email est déjà associé à un compte.';
+
+  if(!shop || !owner || !email || !pass) return alert(msg);
+  let users = getUsers();
+  if(users[email]) return alert(errEmail);
+
+  users[email] = {
+    shop, owner, email, pass,
+    createdAt: new Date().getTime(),
+    isPaid: false,
+    products: [],
+    sales: [], expenses: []
+  };
+
+  saveUsers(users);
+  localStorage.setItem(SESSION_KEY, email);
+  initAppSession();
+}
+
+function handleLogin() {
+  const email = logEmail.value.trim().toLowerCase();
+  const pass = logPass.value;
+  let users = getUsers();
+
+  const lang = getCurrentLang();
+  const errLogin = lang === 'en' ? 'Incorrect email or password.' : 'Email ou mot de passe incorrect.';
+
+  if(!users[email] || users[email].pass !== pass) {
+    return alert(errLogin);
+  }
+
+  localStorage.setItem(SESSION_KEY, email);
+  initAppSession();
+}
+
+function forgotPassword() {
+  const lang = getCurrentLang();
+  const promptText = lang === 'en' ? "Enter the email associated with your account:" : "Entrez l'email associé à votre compte :";
+  const email = prompt(promptText);
+  if(!email) return;
+  let users = getUsers();
+  const cleanEmail = email.trim().toLowerCase();
+  
+  if(users[cleanEmail]) {
+    alert((lang === 'en' ? "Your password is: " : "Votre mot de passe est : ") + users[cleanEmail].pass);
+  } else {
+    alert(lang === 'en' ? "No account found." : "Aucun compte trouvé.");
+  }
+}
+
+function logout() {
+  localStorage.removeItem(SESSION_KEY);
+  location.reload();
+}
+
+function paySubscription() {
+  let db = getCurrentUserData();
+  if(!db) return;
+
+  const FEDAPAY_PUBLIC_KEY = 'pk_test_a0gqI2L-4J8d2g34x1Hq2mP_...'; 
+
+  try {
+    FedaPay.init({
+      public_key: FEDAPAY_PUBLIC_KEY,
+      transaction: {
+        amount: 2000,
+        description: 'Abonnement Pro - Gestionnaire Intelligent'
+      },
+      customer: {
+        email: db.email,
+        last_name: db.owner,
+        first_name: db.shop
+      }
+    }).open().then((response) => {
+      db.isPaid = true;
+      saveCurrentUserData(db);
+      alert(getCurrentLang() === 'en' ? 'Payment successful! Subscription active ✅' : 'Paiement réussi ! Votre abonnement est actif ✅');
+      initAppSession();
+    }).catch((error) => {
+      alert(getCurrentLang() === 'en' ? 'Payment cancelled or interrupted.' : 'Paiement annulé ou interrompu.');
+    });
+  } catch (e) {
+    db.isPaid = true;
+    saveCurrentUserData(db);
+    alert(getCurrentLang() === 'en' ? 'Subscription activated successfully! (Simulation mode)' : 'Abonnement activé avec succès ! (Mode simulation)');
+    initAppSession();
+  }
+}
+
+function initAppSession() {
+  const db = getCurrentUserData();
+  if(!db) {
+    authSection.classList.remove('hidden');
+    app.classList.add('hidden');
+    paywall.classList.add('hidden');
+    return;
+  }
+
+  authSection.classList.add('hidden');
+  const now = new Date().getTime();
+  const thirtyDays = 30 * 24 * 60 * 60 * 1000;
+  const elapsed = now - db.createdAt;
+
+  if(!db.isPaid && elapsed > thirtyDays) {
+    paywall.classList.remove('hidden');
+    app.classList.add('hidden');
+  } else {
+    paywall.classList.add('hidden');
+    app.classList.remove('hidden');
+    const daysLeftVal = Math.max(0, Math.ceil((thirtyDays - elapsed)/(24*60*60*1000)));
+    const lang = getCurrentLang();
+    if(db.isPaid) {
+      document.getElementById('trialNotice').innerHTML = lang === 'en' ? '✅ <b>Pro Subscription Active</b>' : '✅ <b>Abonnement Pro Actif</b>';
+      subStatus.textContent = lang === 'en' ? 'Active' : 'Actif';
+    } else {
+      document.getElementById('daysLeft').textContent = daysLeftVal;
+      subStatus.textContent = lang === 'en' ? `Trial (${daysLeftVal}d left)` : `Essai (${daysLeftVal}j restants)`;
+    }
+    refresh();
+  }
+}
+
+let db = null;
+function persist() { saveCurrentUserData(db); refresh(); }
+function money(n){return new Intl.NumberFormat(getCurrentLang() === 'en' ? 'en-US' : 'fr-FR').format(Math.round(n))+(getCurrentLang() === 'en' ? ' XOF' : ' FCFA')}
+function totals(){db=getCurrentUserData(); return{sales:db.sales.reduce((s,x)=>s+x.total,0),exp:db.expenses.reduce((s,x)=>s+x.amount,0)}}
+
+function show(id){
+ document.querySelectorAll('main section').forEach(s=>s.classList.add('hidden'));
+ document.getElementById(id).classList.remove('hidden');
+ document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('active',b.dataset.page===id));
+ refresh();
+}
+
+function refresh(){
+ db=getCurrentUserData();
+ if(!db)return;
+ const lang = getCurrentLang();
+ hello.textContent=(lang === 'en' ? 'Hello, ' : 'Bonjour, ')+db.owner+' 👋';
+ shopTitle.textContent=db.shop;
+ ownerInfo.textContent=db.owner;
+ shopInfo.textContent=db.shop;
+ emailInfo.textContent=db.email;
+
+ const t=totals(),p=t.sales-t.exp;
+ mSales.textContent=money(t.sales);
+ mExp.textContent=money(t.exp);
+ mProfit.textContent=money(p);
+ mStock.textContent=db.products.reduce((s,x)=>s+x.stock,0);
+
+ saleProduct.innerHTML=db.products.map((x,i)=>`<option value="${i}">${x.name}</option>`).join('');
+ priceFromProduct();
+ renderProducts();
+ renderReports();
+ 
+ const low=db.products.filter(x=>x.stock<=x.min);
+ const tDict = translations[lang];
+ advice.textContent=low.length?(lang === 'en' ? 'Low stock to watch: ' : 'Stock à surveiller : ')+low.slice(0,2).map(x=>x.name).join(', ')+'.':(db.products.length?(lang === 'en' ? 'Keep tracking your sales and expenses.' : 'Continue à suivre tes ventes et dépenses.'):tDict.defaultAdvice);
+}
+
+function priceFromProduct(){ db=getCurrentUserData(); const p=db?.products?.[+(saleProduct.value||0)]; if(p)salePrice.value=p.price; }
+
+function saveSale(){
+ db=getCurrentUserData();
+ const lang = getCurrentLang();
+ if(db.products.length === 0) return alert(lang === 'en' ? 'Please add products to stock first.' : 'Veuillez d\'abord ajouter des produits dans le stock.');
+ const i=+saleProduct.value,q=+saleQty.value,price=+salePrice.value;
+ if(!db.products[i]||q<1||price<0)return alert(lang === 'en' ? 'Check the details.' : 'Vérifie les informations.');
+ if(db.products[i].stock<q)return alert(lang === 'en' ? 'Insufficient stock.' : 'Stock insuffisant.');
+ db.products[i].stock-=q;
+ db.sales.unshift({product:db.products[i].name,qty:q,price,total:q*price,date:new Date().toLocaleString(lang === 'en' ? 'en-US' : 'fr-FR')});
+ saleQty.value=1; persist(); show('home'); alert(lang === 'en' ? 'Sale recorded successfully ✅' : 'Vente enregistrée ✅');
+}
+
+function saveExpense(){
+ db=getCurrentUserData();
+ const amount=+expAmount.value; 
+ const lang = getCurrentLang();
+ if(amount<=0)return alert(lang === 'en' ? 'Invalid amount.' : 'Montant invalide.');
+ db.expenses.unshift({type:expType.value,amount,desc:expDesc.value,date:new Date().toLocaleString(lang === 'en' ? 'en-US' : 'fr-FR')});
+ expAmount.value=''; expDesc.value=''; persist(); show('home'); alert(lang === 'en' ? 'Expense recorded successfully ✅' : 'Dépense enregistrée ✅');
+}
+
+function newProduct(){
+ db=getCurrentUserData();
+ const lang = getCurrentLang();
+ const name=prompt(lang === 'en' ? 'Product name:' : 'Nom du produit :'); if(!name)return;
+ const stock=+prompt(lang === 'en' ? 'Initial stock:' : 'Stock initial :','0'),min=+prompt(lang === 'en' ? 'Minimum threshold:' : 'Seuil minimum :','5'),price=+prompt(lang === 'en' ? 'Selling price:' : 'Prix de vente :','0');
+ db.products.push({name,stock:Math.max(0,stock),min:Math.max(0,min),price:Math.max(0,price)});
+ persist(); refresh();
+}
+
+function renderProducts(){
+ db=getCurrentUserData();
+ if(!db)return; 
+ const lang = getCurrentLang();
+ const q=(productSearch?.value||'').toLowerCase();
+ productList.innerHTML=db.products.filter(p=>p.name.toLowerCase().includes(q)).map(p=>{
+ const c=p.stock<=p.min/2?'critical':p.stock<=p.min?'low':'';
+ const l=p.stock<=p.min/2?(lang === 'en' ? 'Critical' : 'Critique'):p.stock<=p.min?(lang === 'en' ? 'Low' : 'Faible'):(lang === 'en' ? 'In stock' : 'En stock');
+ return `<div class="item"><div class="row"><div><b>${p.name}</b><div class="muted">${p.stock} ${lang === 'en' ? 'unit(s)' : 'unité(s)'} • ${money(p.price)}</div></div><span class="badge ${c}">${l}</span></div></div>`
+ }).join('')||`<p class="muted">${lang === 'en' ? 'No products registered.' : 'Aucun produit enregistré.'}</p>`;
+}
+
+function renderReports(){
+ db=getCurrentUserData();
+ if(!db)return; 
+ const lang = getCurrentLang();
+ const t=totals(),p=t.sales-t.exp,margin=t.sales?Math.max(0,p/t.sales*100):0;
+ rSales.textContent=money(t.sales); rExp.textContent=money(t.exp); rProfit.textContent=money(p); rMargin.textContent=margin.toFixed(1)+'%';
+ const recent=db.sales.slice(0,7),max=Math.max(1,...recent.map(x=>x.total));
+ chart.innerHTML=recent.length?recent.map(x=>`<div class="bar" style="height:${Math.max(8,x.total/max*100)}%"><small>${Math.round(x.total/max*100)}%</small></div>`).join(''):`<span class="muted">${lang === 'en' ? 'No sales' : 'Aucune vente'}</span>`;
+ if(!db.sales.length)analysis.textContent=lang === 'en' ? 'Record some sales to receive an analysis.' : 'Enregistre quelques ventes pour recevoir une analyse.';
+ else{
+ const counts={}; db.sales.forEach(x=>counts[x.product]=(counts[x.product]||0)+x.qty);
+ const top=Object.entries(counts).sort((a,b)=>b[1]-a[1])[0];
+ if(top) analysis.innerHTML=`🏆 ${lang === 'en' ? 'Best selling product' : 'Produit le plus vendu'} : <b>${top[0]}</b> (${top[1]} ${lang === 'en' ? 'unit(s)' : 'unité(s)'}).<br>💰 ${lang === 'en' ? 'Net profit' : 'Bénéfice net'} : <b>${money(p)}</b>.<br>📦 ${db.products.filter(x=>x.stock<=x.min).length} ${lang === 'en' ? 'product(s) have low stock' : 'produit(s) ont un stock faible'}.`;
+ }
+}
+
+function exportCSV(){
+ db=getCurrentUserData();
+ const lang = getCurrentLang();
+ const rows=[[lang === 'en' ? 'TYPE' : 'TYPE', lang === 'en' ? 'DATE' : 'DATE', lang === 'en' ? 'ITEM' : 'ELEMENT', lang === 'en' ? 'QUANTITY' : 'QUANTITE', lang === 'en' ? 'AMOUNT' : 'MONTANT']];
+ db.sales.forEach(x=>rows.push([lang === 'en' ? 'SALE' : 'VENTE',x.date,x.product,x.qty,x.total]));
+ db.expenses.forEach(x=>rows.push([lang === 'en' ? 'EXPENSE' : 'DEPENSE',x.date,x.type,'',x.amount]));
+ const csv=rows.map(r=>r.map(v=>`"${String(v).replaceAll('"','""')}"`).join(';')).join('\n');
+ const blob=new Blob([csv],{type:'text/csv;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');
+ a.href=url; a.download='gestionnaire_intelligent_export.csv'; a.click(); URL.revokeObjectURL(url);
+}
+
+// Initialisation de la langue au démarrage
+document.addEventListener("DOMContentLoaded", () => {
+  const savedLang = getCurrentLang();
+  document.getElementById('globalLangSelect').value = savedLang;
+  switchLanguage(savedLang);
+});
+
+initAppSession();
+</script>
 </body>
 </html>
+
