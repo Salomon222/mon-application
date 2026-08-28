@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#16a34a">
 <title>Gestionnaire Intelligent — SaaS Pro</title>
-<!-- Script officiel FedaPay pour les paiements Mobile Money -->
 <script src="https://cdn.fedapay.com/checkout.js?v=1.1.7"></script>
 <style>
 *{box-sizing:border-box}body{margin:0;background:#f3f6f4;color:#172018;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
@@ -65,8 +64,8 @@ input,select{width:100%;padding:12px;border:1px solid #dce4de;border-radius:11px
 
       <!-- FORMULAIRE INSCRIPTION -->
       <div id="formRegister" class="hidden">
-        <label>Nom du commerce</label><input id="regShop" placeholder="Ex : Boutique Marius">
-        <label>Nom du responsable</label><input id="regOwner" placeholder="Ex : Marius">
+        <label>Nom du commerce</label><input id="regShop" placeholder="Ex : Ma Boutique">
+        <label>Nom du responsable</label><input id="regOwner" placeholder="Ex : Jean">
         <label>Email</label><input id="regEmail" type="email" placeholder="mon@email.com">
         <label>Mot de passe</label><input id="regPass" type="password" placeholder="••••••••">
         <button class="primary" style="width:100%" onclick="handleRegister()">Créer mon compte (Essai 30j)</button>
@@ -94,7 +93,7 @@ input,select{width:100%;padding:12px;border:1px solid #dce4de;border-radius:11px
 <button class="primary" onclick="show('sale')">＋ Vente</button><button class="soft" onclick="show('expense')">＋ Dépense</button>
 <button class="soft" onclick="show('products')">📦 Produits</button><button class="soft" onclick="show('reports')">📈 Rapports</button>
 </div></div>
-<div class="notice">🤖 <b>Conseil</b><br><span id="advice">Commence par enregistrer une vente.</span></div>
+<div class="notice">🤖 <b>Conseil</b><br><span id="advice">Commence par ajouter tes produits dans l'onglet Stock.</span></div>
 </section>
 
 <section id="sale" class="hidden"><button class="back" onclick="show('home')">←</button><h2 class="title">Nouvelle vente</h2>
@@ -180,7 +179,7 @@ function handleRegister() {
     shop, owner, email, pass,
     createdAt: new Date().getTime(),
     isPaid: false,
-    products: [{name:'Riz 25 kg',stock:12,min:5,price:18000},{name:'Huile 1 L',stock:5,min:5,price:1500},{name:'Sucre 1 kg',stock:2,min:5,price:1000}],
+    products: [], // Liste vide pour que l'utilisateur ajoute ses propres produits
     sales: [], expenses: []
   };
 
@@ -220,12 +219,10 @@ function logout() {
   location.reload();
 }
 
-// Paiement FedaPay sécurisé sans blocage
 function paySubscription() {
   let db = getCurrentUserData();
   if(!db) return;
 
-  // Clé publique FedaPay intégrée directement pour éviter l'erreur
   const FEDAPAY_PUBLIC_KEY = 'pk_test_a0gqI2L-4J8d2g34x1Hq2mP_...'; 
 
   try {
@@ -249,7 +246,6 @@ function paySubscription() {
       alert('Paiement annulé ou interrompu.');
     });
   } catch (e) {
-    // Si le widget FedaPay rencontre un souci de script externe, on valide l'abonnement en mode test pour ne pas bloquer l'utilisateur
     db.isPaid = true;
     saveCurrentUserData(db);
     alert('Abonnement activé avec succès ! (Mode simulation)');
@@ -322,13 +318,14 @@ function refresh(){
  renderReports();
  
  const low=db.products.filter(x=>x.stock<=x.min);
- advice.textContent=low.length?'Stock à surveiller : '+low.slice(0,2).map(x=>x.name).join(', ')+'.':'Continue à suivre tes ventes et dépenses.';
+ advice.textContent=low.length?'Stock à surveiller : '+low.slice(0,2).map(x=>x.name).join(', ')+'.':(db.products.length?'Continue à suivre tes ventes et dépenses.':'Commence par ajouter tes produits dans l\'onglet Stock.');
 }
 
 function priceFromProduct(){ db=getCurrentUserData(); const p=db?.products?.[+(saleProduct.value||0)]; if(p)salePrice.value=p.price; }
 
 function saveSale(){
  db=getCurrentUserData();
+ if(db.products.length === 0) return alert('Veuillez d\'abord ajouter des produits dans le stock.');
  const i=+saleProduct.value,q=+saleQty.value,price=+salePrice.value;
  if(!db.products[i]||q<1||price<0)return alert('Vérifie les informations.');
  if(db.products[i].stock<q)return alert('Stock insuffisant.');
@@ -359,7 +356,7 @@ function renderProducts(){
  productList.innerHTML=db.products.filter(p=>p.name.toLowerCase().includes(q)).map(p=>{
  const c=p.stock<=p.min/2?'critical':p.stock<=p.min?'low':'',l=p.stock<=p.min/2?'Critique':p.stock<=p.min?'Faible':'En stock';
  return `<div class="item"><div class="row"><div><b>${p.name}</b><div class="muted">${p.stock} unité(s) • ${money(p.price)}</div></div><span class="badge ${c}">${l}</span></div></div>`
- }).join('')||'<p class="muted">Aucun produit.</p>';
+ }).join('')||'<p class="muted">Aucun produit enregistré.</p>';
 }
 
 function renderReports(){
@@ -371,7 +368,7 @@ function renderReports(){
  chart.innerHTML=recent.length?recent.map(x=>`<div class="bar" style="height:${Math.max(8,x.total/max*100)}%"><small>${Math.round(x.total/max*100)}%</small></div>`).join(''):'<span class="muted">Aucune vente</span>';
  if(!db.sales.length)analysis.textContent='Enregistre quelques ventes pour recevoir une analyse.';
  else{
- const counts={}; db.sales.fallback=true; db.sales.forEach(x=>counts[x.product]=(counts[x.product]||0)+x.qty);
+ const counts={}; db.sales.forEach(x=>counts[x.product]=(counts[x.product]||0)+x.qty);
  const top=Object.entries(counts).sort((a,b)=>b[1]-a[1])[0];
  if(top) analysis.innerHTML=`🏆 Produit le plus vendu : <b>${top[0]}</b> (${top[1]} unité(s)).<br>💰 Bénéfice net : <b>${money(p)}</b>.<br>📦 ${db.products.filter(x=>x.stock<=x.min).length} produit(s) ont un stock faible.`;
  }
@@ -391,4 +388,3 @@ initAppSession();
 </script>
 </body>
 </html>
-
