@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tableau de bord - Gestionnaire Intelligent SaaS Pro</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-100 min-h-screen flex flex-col">
+
+  <!-- En-tête mobile -->
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-50">
+    <div class="max-w-4xl mx-auto px-4 py-3 flex justify-between items-center">
+      <h1 class="font-bold text-slate-800 text-lg">SaaS Pro 📱</h1>
+      <div class="flex items-center space-x-3">
+        <span id="user-email-display" class="text-xs text-slate-500 font-medium"></span>
+        <button onclick="logout()" class="text-xs bg-red-50 text-red-600 px-3 py-1.5 rounded-lg font-semibold hover:bg-red-100 transition">Déconnexion</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Contenu Principal -->
+  <main class="max-w-4xl w-full mx-auto p-4 flex-1 space-y-6 pb-20">
+
+    <!-- Indicateurs Financiers Clés (KPIs) -->
+    <section>
+      <h2 class="text-sm font-bold uppercase tracking-wider text-slate-500 mb-3">Synthèse Financière</h2>
+      <div class="grid grid-cols-2 gap-3">
+        <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
+          <p class="text-xs text-slate-400 font-medium">Chiffre d'Affaires</p>
+          <p id="kpi-revenue" class="text-xl font-extrabold text-slate-900 mt-1">0 F</p>
+        </div>
+        <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
+          <p class="text-xs text-slate-400 font-medium">Bénéfice Net Réel</p>
+          <p id="kpi-net-profit" class="text-xl font-extrabold text-emerald-600 mt-1">0 F</p>
+        </div>
+        <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
+          <p class="text-xs text-slate-400 font-medium">Marge Brute</p>
+          <p id="kpi-gross-profit" class="text-lg font-bold text-slate-700 mt-1">0 F</p>
+        </div>
+        <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
+          <p class="text-xs text-slate-400 font-medium">Total Dépenses</p>
+          <p id="kpi-expenses" class="text-lg font-bold text-red-500 mt-1">0 F</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Actions Rapides -->
+    <section class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 flex justify-around">
+      <button onclick="alert('Module de vente rapide en cours de chargement...')" class="flex flex-col items-center text-blue-600">
+        <div class="w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center text-xl mb-1">🛒</div>
+        <span class="text-xs font-semibold">Vendre</span>
+      </button>
+      <button onclick="alert('Module produits en cours...')" class="flex flex-col items-center text-emerald-600">
+        <div class="w-12 h-12 bg-emerald-50 rounded-full flex items-center justify-center text-xl mb-1">📦</div>
+        <span class="text-xs font-semibold">Produits</span>
+      </button>
+      <button onclick="alert('Module dépenses en cours...')" class="flex flex-col items-center text-amber-600">
+        <div class="w-12 h-12 bg-amber-50 rounded-full flex items-center justify-center text-xl mb-1">💸</div>
+        <span class="text-xs font-semibold">Dépenses</span>
+      </button>
+      <button onclick="loadDashboardData()" class="flex flex-col items-center text-slate-600">
+        <div class="w-12 h-12 bg-slate-50 rounded-full flex items-center justify-center text-xl mb-1">🔄</div>
+        <span class="text-xs font-semibold">Actualiser</span>
+      </button>
+    </section>
+
+    <!-- Produits les plus vendus -->
+    <section class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
+      <h2 class="text-sm font-bold uppercase tracking-wider text-slate-500 mb-3">Top Produits</h2>
+      <div id="top-products-list" class="space-y-2">
+        <p class="text-xs text-slate-400 italic">Chargement des performances...</p>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Script de chargement des données -->
+  <script src="js/config.js"></script>
+  <script>
+    // Vérification de la connexion au chargement
+    document.addEventListener('DOMContentLoaded', () => {
+      const token = getAuthToken();
+      if (!token) {
+        window.location.href = 'login.html';
+        return;
+      }
+
+      const user = JSON.parse(localStorage.getItem('saas_user') || '{}');
+      if (user.email) {
+        document.getElementById('user-email-display').textContent = user.email;
+      }
+
+      loadDashboardData();
+    });
+
+    async function loadDashboardData() {
+      try {
+        const data = await apiRequest('/reports/dashboard');
+        const metrics = data.metrics;
+
+        // Mise à jour des KPIs
+        document.getElementById('kpi-revenue').textContent = metrics.totalRevenue.toLocaleString() + ' F';
+        document.getElementById('kpi-net-profit').textContent = metrics.netProfit.toLocaleString() + ' F';
+        document.getElementById('kpi-gross-profit').textContent = metrics.grossProfit.toLocaleString() + ' F';
+        document.getElementById('kpi-expenses').textContent = metrics.totalExpenses.toLocaleString() + ' F';
+
+        // Mise à jour de la liste des top produits
+        const topList = document.getElementById('top-products-list');
+        if (data.topProducts && data.topProducts.length > 0) {
+          topList.innerHTML = data.topProducts.map(p => `
+            <div class="flex justify-between items-center py-2 border-b border-slate-100 text-sm">
+              <span class="font-medium text-slate-800">${p.name}</span>
+              <span class="text-xs font-semibold bg-blue-50 text-blue-600 px-2 py-1 rounded-md">${p.total_qty_sold} vendus</span>
+            </div>
+          `).join('');
+        } else {
+          topList.innerHTML = '<p class="text-xs text-slate-400 italic">Aucune vente enregistrée pour le moment.</p>';
+        }
+
+      } catch (err) {
+        console.error('Erreur chargement dashboard :', err);
+        if (err.message.includes('Jeton')) {
+          logout();
+        }
+      }
+    }
+
+    function logout() {
+      localStorage.removeItem('saas_token');
+      localStorage.removeItem('saas_user');
+      window.location.href = 'login.html';
+    }
+  </script>
+</body>
+</html>
