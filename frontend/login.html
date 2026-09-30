@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Connexion - Gestionnaire Intelligent SaaS Pro</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 min-h-screen flex flex-col justify-between">
+
+  <div class="max-w-md w-full mx-auto p-6 mt-10 bg-white rounded-2xl shadow-lg border border-slate-100">
+    
+    <!-- En-tête -->
+    <div class="text-center mb-8">
+      <h1 class="text-2xl font-bold text-slate-900">Gestionnaire Intelligent</h1>
+      <p class="text-sm text-slate-500 mt-1">Espace Professionnel SaaS</p>
+    </div>
+
+    <!-- Onglets Bascule Connexion / Inscription -->
+    <div class="flex border-b border-slate-200 mb-6">
+      <button id="tab-login" onclick="switchTab('login')" class="flex-1 pb-3 text-sm font-semibold text-blue-600 border-b-2 border-blue-600 transition">Connexion</button>
+      <button id="tab-register" onclick="switchTab('register')" class="flex-1 pb-3 text-sm font-semibold text-slate-400 hover:text-slate-600 transition">Inscription</button>
+    </div>
+
+    <!-- Message d'alerte -->
+    <div id="alert-box" class="hidden mb-4 p-3 rounded-lg text-sm font-medium"></div>
+
+    <!-- FORMULAIRE DE CONNEXION -->
+    <form id="form-login" onsubmit="handleLogin(event)" class="space-y-4">
+      <div>
+        <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Email professionnel</label>
+        <input type="email5" id="login-email" required class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm" placeholder="monentreprise@email.com">
+      </div>
+      <div>
+        <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Mot de passe</label>
+        <input type="password" id="login-password" required class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm" placeholder="••••••••">
+      </div>
+      <button type="submit" class="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl shadow-md transition">
+        Se connecter
+      </button>
+    </form>
+
+    <!-- FORMULAIRE D'INSCRIPTION -->
+    <form id="form-register" onsubmit="handleRegister(event)" class="space-y-4 hidden">
+      <div>
+        <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Nom de l'entreprise</label>
+        <input type="text" id="reg-company" required class="w-full px-3 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm" placeholder="Boutique Pro">
+      </div>
+      <div>
+        <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Votre Nom complet</label>
+        <input type="text" id="reg-owner" required class="w-full px-3 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm" placeholder="Jean Kouassi">
+      </div>
+      <div>
+        <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Email professionnel</label>
+        <input type="email" id="reg-email" required class="w-full px-3 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm" placeholder="jean@boutique.com">
+      </div>
+      <div>
+        <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Mot de passe sécurisé</label>
+        <input type="password" id="reg-password" required class="w-full px-3 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm" placeholder="••••••••">
+      </div>
+      <button type="submit" class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl shadow-md transition">
+        Créer mon compte (14 jours d'essai)
+      </button>
+    </form>
+
+  </div>
+
+  <!-- Pied de page -->
+  <footer class="text-center py-6 text-xs text-slate-400">
+    Sécurité garantie par Chiffrement & PostgreSQL • SaaS Pro 2026
+  </footer>
+
+  <!-- Script de gestion -->
+  <script src="js/config.js"></script>
+  <script>
+    function switchTab(tab) {
+      const loginForm = document.getElementById('form-login');
+      const registerForm = document.getElementById('form-register');
+      const tabLogin = document.getElementById('tab-login');
+      const tabRegister = document.getElementById('tab-register');
+      const alertBox = document.getElementById('alert-box');
+      alertBox.classList.add('hidden');
+
+      if (tab === 'login') {
+        loginForm.classList.remove('hidden');
+        registerForm.classList.add('hidden');
+        tabLogin.className = "flex-1 pb-3 text-sm font-semibold text-blue-600 border-b-2 border-blue-600 transition";
+        tabRegister.className = "flex-1 pb-3 text-sm font-semibold text-slate-400 hover:text-slate-600 transition";
+      } else {
+        loginForm.classList.add('hidden');
+        registerForm.classList.remove('hidden');
+        tabRegister.className = "flex-1 pb-3 text-sm font-semibold text-blue-600 border-b-2 border-blue-600 transition";
+        tabLogin.className = "flex-1 pb-3 text-sm font-semibold text-slate-400 hover:text-slate-600 transition";
+      }
+    }
+
+    function showAlert(message, isError = true) {
+      const alertBox = document.getElementById('alert-box');
+      alertBox.textContent = message;
+      alertBox.className = `mb-4 p-3 rounded-lg text-sm font-medium ${isError ? 'bg-red-50 text-red-600 border border-red-200' : 'bg-emerald-50 text-emerald-600 border border-emerald-200'}`;
+      alertBox.classList.remove('hidden');
+    }
+
+    async function handleLogin(e) {
+      e.preventDefault();
+      const email = document.getElementById('login-email').value;
+      const password = document.getElementById('login-password').value;
+
+      try {
+        const data = await apiRequest('/auth/login', {
+          method: 'POST',
+          body: JSON.stringify({ email, password })
+        });
+
+        localStorage.setItem('saas_token', data.token);
+        localStorage.setItem('saas_user', JSON.stringify(data.user));
+        
+        showAlert('Connexion réussie ! Redirection...', false);
+        setTimeout(() => { window.location.href = 'index.html'; }, 1000);
+      } catch (err) {
+        showAlert(err.message || 'Erreur lors de la connexion.');
+      }
+    }
+
+    async function handleRegister(e) {
+      e.preventDefault();
+      const companyName = document.getElementById('reg-company').value;
+      const ownerName = document.getElementById('reg-owner').value;
+      const email = document.getElementById('reg-email').value;
+      const password = document.getElementById('reg-password').value;
+
+      try {
+        const data = await apiRequest('/auth/register', {
+          method: 'POST',
+          body: JSON.stringify({ companyName, ownerName, email, password })
+        });
+
+        localStorage.setItem('saas_token', data.token);
+        localStorage.setItem('saas_user', JSON.stringify(data.user));
+
+        showAlert('Compte créé avec succès ! Redirection...', false);
+        setTimeout(() => { window.location.href = 'index.html'; }, 1000);
+      } catch (err) {
+        showAlert(err.message || 'Erreur lors de l\'inscription.');
+      }
+    }
+  </script>
+</body>
+</html>
